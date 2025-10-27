@@ -1,1 +1,5 @@
-# spring_s3_file_manager_system
+# File Upload Sequence Diagram
+
+## Process Flow
+
+![img.png](img.png)
