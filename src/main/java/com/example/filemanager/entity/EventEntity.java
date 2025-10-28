@@ -2,6 +2,7 @@ package com.example.filemanager.entity;
 
 import com.example.filemanager.config.status.EventStatus;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.Instant;
 
@@ -12,8 +13,10 @@ public class EventEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private EventStatus status;
 
+    @CreatedDate
     private Instant timestamp;
 
     @ManyToOne

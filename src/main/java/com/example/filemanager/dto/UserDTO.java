@@ -1,6 +1,8 @@
 package com.example.filemanager.dto;
 
+import com.example.filemanager.config.UserRole;
 import com.example.filemanager.config.status.UserStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -8,6 +10,10 @@ public class UserDTO {
     private String username;
     private UserStatus status;
     private List<EventDTO> events;
+    private UserRole role;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
+    private String createdAt;
 
     public UserDTO() {
     }

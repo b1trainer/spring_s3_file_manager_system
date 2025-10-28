@@ -34,7 +34,7 @@ public class FileController {
         String contentType = objectBytes.response().contentType();
         String filename = objectBytes.response().metadata().get("filename");
 
-        ResponseEntity responseEntity = ResponseEntity.ok()
+        ResponseEntity<byte[]> responseEntity = ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + filename + "\"")

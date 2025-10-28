@@ -1,12 +1,10 @@
 package com.example.filemanager.repository;
 
-import com.example.filemanager.dto.FileDTO;
+import com.example.filemanager.entity.FileEntity;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Mono;
 
 @Repository
-public interface FileRepository {
-    String getFileLocation(String fileId);
+public interface FileRepository extends R2dbcRepository<FileEntity, Long> {
 
-    void saveFileInfo(FileDTO fileDTO);
 }

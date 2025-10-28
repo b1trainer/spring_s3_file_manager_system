@@ -1,8 +1,13 @@
 package com.example.filemanager.entity;
 
+import com.example.filemanager.config.UserRole;
 import com.example.filemanager.config.status.UserStatus;
 import jakarta.persistence.*;
+import org.mapstruct.Builder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +20,17 @@ public class UserEntity {
 
     private String username;
 
+    private String password;
+
+    private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
     private UserStatus status;
 
     @OneToMany(mappedBy = "user")
     private Set<EventEntity> events = new HashSet<>();
+
+    private UserRole role;
 
     public Long getId() {
         return id;
@@ -42,5 +54,13 @@ public class UserEntity {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public Set<EventEntity> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<EventEntity> events) {
+        this.events = events;
     }
 }

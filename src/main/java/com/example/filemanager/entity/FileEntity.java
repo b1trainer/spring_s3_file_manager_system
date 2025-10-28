@@ -17,6 +17,7 @@ public class FileEntity {
 
     private String location;
 
+    @Enumerated(EnumType.STRING)
     private FileStatus status;
 
     @OneToMany(mappedBy = "file", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
