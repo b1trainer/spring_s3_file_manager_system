@@ -8,6 +8,16 @@ public class EventDTO {
     private EventStatus status;
     private String timestamp;
 
+    public EventDTO() {
+    }
+
+    public EventDTO(UserDTO user, FileDTO file, EventStatus status, String timestamp) {
+        this.user = user;
+        this.file = file;
+        this.status = status;
+        this.timestamp = timestamp;
+    }
+
     public UserDTO getUser() {
         return user;
     }
@@ -38,5 +48,15 @@ public class EventDTO {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "EventDTO{" +
+                "user=" + user +
+                ", file=" + file +
+                ", status=" + status +
+                ", timestamp='" + timestamp + '\'' +
+                '}';
     }
 }

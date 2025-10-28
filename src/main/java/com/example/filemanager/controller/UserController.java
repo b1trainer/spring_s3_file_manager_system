@@ -17,14 +17,27 @@ public class UserController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<UserDTO>> createUser() {}
+    public Mono<ResponseEntity<UserDTO>> createUser(@RequestBody UserDTO userDTO) {
+        return userService.createUser(userDTO)
+                .map(ResponseEntity::ok);
+    }
 
-    @GetMapping
-    public Mono<ResponseEntity<UserDTO>> getUser() {}
+    @GetMapping("/{userId}")
+    public Mono<ResponseEntity<UserDTO>> getUser(@PathVariable String userId) {
+        return userService.getUser(userId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 
-    @PutMapping
-    public Mono<ResponseEntity<UserDTO>> updateUser() {}
+    @PutMapping("/{userId}")
+    public Mono<ResponseEntity<UserDTO>> updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO) {
+        return userService.updateUser(userDTO)
+                .map(ResponseEntity::ok);
+    }
 
-    @DeleteMapping
-    public Mono<ResponseEntity<Void>> deleteUser() {}
+    @DeleteMapping("/{userId}")
+    public Mono<ResponseEntity<Void>> deleteUser(@PathVariable String userId) {
+        return userService.deleteUser(userId)
+                .then(Mono.just(ResponseEntity.noContent().build()));
+    }
 }

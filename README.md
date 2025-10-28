@@ -2,4 +2,8 @@
 
 ## Process Flow
 
-![img.png](img.png)
+![process_flow.png](process_flow.png)
+
+## DB Scheme
+![db_scheme.png](db_scheme.png)
+

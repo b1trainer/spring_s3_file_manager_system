@@ -7,6 +7,15 @@ public class FileDTO {
     private String location;
     private FileStatus status;
 
+    public FileDTO() {
+    }
+
+    public FileDTO(String name, String location, FileStatus status) {
+        this.name = name;
+        this.location = location;
+        this.status = status;
+    }
+
     public String getName() {
         return name;
     }
@@ -29,5 +38,14 @@ public class FileDTO {
 
     public void setStatus(FileStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "FileDTO{" +
+                "name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", status=" + status +
+                '}';
     }
 }

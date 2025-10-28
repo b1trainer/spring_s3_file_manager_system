@@ -5,17 +5,17 @@ import com.example.filemanager.config.status.UserStatus;
 import java.util.List;
 
 public class UserDTO {
-    private String id;
     private String username;
     private UserStatus status;
     private List<EventDTO> events;
 
-    public String getId() {
-        return id;
+    public UserDTO() {
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public UserDTO(String username, UserStatus status, List<EventDTO> events) {
+        this.username = username;
+        this.status = status;
+        this.events = events;
     }
 
     public String getUsername() {
@@ -40,5 +40,14 @@ public class UserDTO {
 
     public void setEvents(List<EventDTO> events) {
         this.events = events;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                ", username='" + username + '\'' +
+                ", status=" + status +
+                ", events=" + events +
+                '}';
     }
 }
