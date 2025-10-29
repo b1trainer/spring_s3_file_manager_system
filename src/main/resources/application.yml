@@ -1,5 +1,6 @@
 server:
   port: 8888
+
 spring:
   application:
     name: file-manager
@@ -10,7 +11,18 @@ spring:
   flyway:
     url: jdbc:mysql://localhost:3306/file_manager
     locations: classpath:db/migration
+
 aws:
   region: ru-central1
   endpoint_url: https://storage.yandexcloud.net
   bucket-name: bucket
+
+jwt:
+  password:
+    encoder:
+      secret:
+      iterations: 64
+      keyLength: 256
+  secret:
+  expiration: 3600
+  issuer: nikita
