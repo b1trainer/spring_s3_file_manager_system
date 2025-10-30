@@ -40,5 +40,4 @@ public class EventController {
         return eventService.deleteEvent(eventId)
                 .then(Mono.just(ResponseEntity.noContent().build()));
     }
-
 }

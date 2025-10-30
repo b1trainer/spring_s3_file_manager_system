@@ -9,11 +9,11 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import java.io.IOException;
 
 public interface FileService {
-    public ResponseBytes<GetObjectResponse> getFile(String location);
+    FileDTO getFile(String location);
 
-    public Mono<FileDTO> createFile(MultipartFile file) throws IOException;
+    Mono<FileDTO> loadFile(FileDTO file) throws IOException;
 
-    public Mono<FileDTO> updateFile(FileDTO fileDTO);
+    Mono<FileDTO> updateFile(String fileId, FileDTO fileDTO);
 
-    public Mono<Void> deleteFile(String location);
+    Mono<Void> deleteFile(String location);
 }

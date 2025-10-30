@@ -1,52 +1,21 @@
 package com.example.filemanager.security;
 
-import java.time.Instant;
+import java.util.Date;
 
 public class TokenDetails {
     private Long userid;
     private String token;
-    private Instant issuedAt;
-    private Instant expiresAt;
+    private Date issuedAt;
+    private Date expiresAt;
 
     public TokenDetails() {
     }
 
-    public TokenDetails(Long userid, String token, Instant issuedAt, Instant expiresAt) {
+    public TokenDetails(Long userid, String token, Date issuedAt, Date expiresAt) {
         this.userid = userid;
         this.token = token;
         this.issuedAt = issuedAt;
         this.expiresAt = expiresAt;
-    }
-
-    public static class Builder {
-        private Long userid;
-        private String token;
-        private Instant issuedAt;
-        private Instant expiresAt;
-
-        public Builder userid(Long userid) {
-            this.userid = userid;
-            return this;
-        }
-
-        public Builder token(String token) {
-            this.token = token;
-            return this;
-        }
-
-        public Builder issuedAt(Instant issuedAt) {
-            this.issuedAt = issuedAt;
-            return this;
-        }
-
-        public Builder expiresAt(Instant expiresAt) {
-            this.expiresAt = expiresAt;
-            return this;
-        }
-
-        public TokenDetails build() {
-            return new TokenDetails(this.userid, this.token, this.issuedAt, this.expiresAt);
-        }
     }
 
     public Long getUserid() {
@@ -65,19 +34,19 @@ public class TokenDetails {
         this.token = token;
     }
 
-    public Instant getIssuedAt() {
+    public Date getIssuedAt() {
         return issuedAt;
     }
 
-    public void setIssuedAt(Instant issuedAt) {
+    public void setIssuedAt(Date issuedAt) {
         this.issuedAt = issuedAt;
     }
 
-    public Instant getExpiresAt() {
+    public Date getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(Instant expiresAt) {
+    public void setExpiresAt(Date expiresAt) {
         this.expiresAt = expiresAt;
     }
 }

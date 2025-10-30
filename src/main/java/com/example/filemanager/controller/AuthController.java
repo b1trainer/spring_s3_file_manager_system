@@ -1,9 +1,11 @@
 package com.example.filemanager.controller;
 
+import com.example.filemanager.config.UserRole;
 import com.example.filemanager.dto.AuthRequestDTO;
 import com.example.filemanager.dto.AuthResponseDTO;
 import com.example.filemanager.dto.UserDTO;
 import com.example.filemanager.entity.UserEntity;
+import com.example.filemanager.exceptions.InvalidCredentialsException;
 import com.example.filemanager.mapper.UserMapper;
 import com.example.filemanager.repository.UserRepository;
 import com.example.filemanager.security.CustomPrincipal;
@@ -11,8 +13,6 @@ import com.example.filemanager.security.SecurityService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import java.util.Date;
 
 @RestController
 @RequestMapping("/rest/v1/auth")
@@ -30,6 +30,15 @@ public class AuthController {
 
     @PostMapping("/signIn")
     public Mono<UserDTO> register(@RequestBody UserDTO userDTO) {
+        if (userDTO.getUsername() == null ||
+                userDTO.getUsername().isEmpty() ||
+                userDTO.getPassword() == null ||
+                userDTO.getPassword().isEmpty() ||
+                userDTO.getRole() == UserRole.ADMIN
+        ) {
+            return Mono.error(new InvalidCredentialsException("Invalid credentials"));
+        }
+
         UserEntity entity = userMapper.map(userDTO);
 
         return userRepository.save(entity)
@@ -43,14 +52,14 @@ public class AuthController {
                     AuthResponseDTO authResponseDTO = new AuthResponseDTO();
                     authResponseDTO.setUserid(tokenDetails.getUserid());
                     authResponseDTO.setToken(tokenDetails.getToken());
-                    authResponseDTO.setExpireAt(Date.from(tokenDetails.getExpiresAt()));
-                    authResponseDTO.setIssuedAt(Date.from(tokenDetails.getIssuedAt()));
+                    authResponseDTO.setExpireAt(tokenDetails.getExpiresAt());
+                    authResponseDTO.setIssuedAt(tokenDetails.getIssuedAt());
                     return Mono.just(authResponseDTO);
                 });
     }
 
     @GetMapping("/info")
-    public Mono<UserDTO> getUserInfo(Authentication authentication){
+    public Mono<UserDTO> getUserInfo(Authentication authentication) {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
         return userRepository.findById(principal.getId())

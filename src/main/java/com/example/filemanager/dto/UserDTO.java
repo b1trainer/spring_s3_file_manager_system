@@ -8,20 +8,28 @@ import java.util.List;
 
 public class UserDTO {
     private String username;
+
     private UserStatus status;
+
     private List<EventDTO> events;
+
     private UserRole role;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
     private String createdAt;
 
     public UserDTO() {
     }
 
-    public UserDTO(String username, UserStatus status, List<EventDTO> events) {
+    public UserDTO(String username, UserStatus status, List<EventDTO> events, UserRole role, String password, String createdAt) {
         this.username = username;
         this.status = status;
         this.events = events;
+        this.role = role;
+        this.password = password;
+        this.createdAt = createdAt;
     }
 
     public String getUsername() {
@@ -48,12 +56,27 @@ public class UserDTO {
         this.events = events;
     }
 
-    @Override
-    public String toString() {
-        return "UserDTO{" +
-                ", username='" + username + '\'' +
-                ", status=" + status +
-                ", events=" + events +
-                '}';
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

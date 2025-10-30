@@ -31,7 +31,7 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public Mono<ResponseEntity<UserDTO>> updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO) {
-        return userService.updateUser(userDTO)
+        return userService.updateUser(userId, userDTO)
                 .map(ResponseEntity::ok);
     }
 

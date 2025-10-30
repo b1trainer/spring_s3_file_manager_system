@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/rest/v1/files")
@@ -22,30 +22,26 @@ public class FileController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<FileDTO>> uploadFile(@RequestPart(name = "file") MultipartFile file) {
-        return fileService.createFile(file)
+    public Mono<ResponseEntity<FileDTO>> uploadFile(@RequestPart(name = "file") MultipartFile file) throws IOException {
+        return fileService.loadFile(file)
                 .map(ResponseEntity::ok);
-    }
+    } // @RequestBody fileDto, @RequestPart(name = "file") MultipartFile file ??
 
     @GetMapping("/{fileId}")
-    public Mono<ResponseEntity<byte[]>> getFile(@PathVariable String fileId) {
-        ResponseBytes<GetObjectResponse> objectBytes = fileService.getFile(fileId);
+    public Mono<Object> getFile(@PathVariable String fileId) {
 
-        String contentType = objectBytes.response().contentType();
-        String filename = objectBytes.response().metadata().get("filename");
+        FileDTO fileDTO = fileService.getFile(fileId);
 
-        ResponseEntity<byte[]> responseEntity = ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
+        return Mono.just(ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(fileDTO.getContentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + filename + "\"")
-                .body(objectBytes.asByteArray());
-
-        return Mono.just(responseEntity);
+                        "attachment; filename=\"" + fileDTO.getName() + "\"")
+                .body(fileDTO.getContent()));
     }
 
     @PutMapping("/{fileId}")
     public Mono<ResponseEntity<FileDTO>> updateFile(@PathVariable String fileId, @RequestBody FileDTO fileDTO) {
-        return fileService.updateFile(fileDTO)
+        return fileService.updateFile(fileId, fileDTO)
                 .map(ResponseEntity::ok);
     }
 
@@ -54,5 +50,4 @@ public class FileController {
         return fileService.deleteFile(fileId)
                 .then(Mono.just(ResponseEntity.noContent().build()));
     }
-
 }

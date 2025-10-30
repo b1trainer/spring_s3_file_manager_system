@@ -3,6 +3,9 @@ package com.example.filemanager.service.impl;
 import com.example.filemanager.config.ApplicationConfig;
 import com.example.filemanager.config.status.FileStatus;
 import com.example.filemanager.dto.FileDTO;
+import com.example.filemanager.entity.FileEntity;
+import com.example.filemanager.mapper.FileMapper;
+import com.example.filemanager.repository.EventRepository;
 import com.example.filemanager.repository.FileRepository;
 import com.example.filemanager.service.FileService;
 import jakarta.transaction.Transactional;
@@ -15,6 +18,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.IOException;
 
@@ -22,53 +26,59 @@ import java.io.IOException;
 public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
+    private final EventRepository eventRepository;
     private final S3Client s3Client;
+    private final FileMapper fileMapper;
 
-    public FileServiceImpl(FileRepository fileRepository, S3Client s3Client) {
+    public FileServiceImpl(FileRepository fileRepository, EventRepository eventRepository, S3Client s3Client, FileMapper fileMapper) {
         this.fileRepository = fileRepository;
+        this.eventRepository = eventRepository;
         this.s3Client = s3Client;
+        this.fileMapper = fileMapper;
     }
 
     @Override
-    public ResponseBytes<GetObjectResponse> getFile(String fileId) {
-        String location = fileRepository.getFileLocation(fileId);
+    public FileDTO getFile(String fileId) {
+        Long id = Long.parseLong(fileId);
+        FileEntity fileEntity = fileRepository.getFileEntityById(id);
 
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .key(location)
+                .key(fileEntity.getLocation())
                 .bucket(ApplicationConfig.getBucketName())
                 .build();
 
-        ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
+        ResponseBytes<GetObjectResponse> s3response = s3Client.getObjectAsBytes(getObjectRequest);
 
-        return objectBytes;
+        FileDTO fileDTO = fileMapper.map(fileEntity); // n+1 in mapper?
+        fileDTO.setContent(s3response.asByteArray());
+        fileDTO.setContentType(s3response.response().contentType());
+
+        return fileDTO;
     }
 
     @Override
     @Transactional
-    public Mono<FileDTO> createFile(MultipartFile file) throws IOException {
-        String location = ApplicationConfig.getBucketName() + "/" + file.getOriginalFilename();
+    public Mono<FileDTO> loadFile(FileDTO fileDto) {
+        String location = ApplicationConfig.getBucketName() + "/" + fileDto.getName();
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .key(location)
                 .bucket(ApplicationConfig.getBucketName())
-                .contentType(file.getContentType())
+                .contentType(fileDto.getContentType())
                 .build();
 
-        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileDto.getContent()));
 
-        FileDTO fileDTO = new FileDTO();
-        fileDTO.setName(file.getName());
-        fileDTO.setStatus(FileStatus.ACTIVE);
-        fileDTO.setLocation(location);
+        FileEntity fileEntity = fileMapper.map(fileDto);
+        fileEntity.setLocation(location);
 
-        fileRepository.saveFileInfo(fileDTO); // change repo
+        fileRepository.save(fileEntity);
 
-        return Mono.just(fileDTO);
+        return Mono.just(fileDto); // ??? dont return anything?
     }
 
     @Override
-    @Transactional
-    public Mono<FileDTO> updateFile(FileDTO fileDTO) {
+    public Mono<FileDTO> updateFile(String fileId, FileDTO fileDTO) {
         return null;
     }
 

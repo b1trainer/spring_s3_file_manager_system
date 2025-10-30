@@ -20,7 +20,7 @@ public class FileEntity {
     @Enumerated(EnumType.STRING)
     private FileStatus status;
 
-    @OneToMany(mappedBy = "file", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "file", fetch = FetchType.LAZY)
     private Set<EventEntity> events = new HashSet<>();
 
     public Long getId() {

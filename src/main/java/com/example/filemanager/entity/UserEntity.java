@@ -1,13 +1,11 @@
 package com.example.filemanager.entity;
 
-import com.example.filemanager.config.UserRole;
 import com.example.filemanager.config.status.UserStatus;
 import jakarta.persistence.*;
-import org.mapstruct.Builder;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,15 +20,18 @@ public class UserEntity {
 
     private String password;
 
-    private LocalDateTime createdAt;
+    @CreatedDate
+    private Instant createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<EventEntity> events = new HashSet<>();
-
-    private UserRole role;
 
     public Long getId() {
         return id;
@@ -48,6 +49,30 @@ public class UserEntity {
         this.username = username;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public RoleEntity getRole() {
+        return role;
+    }
+
+    public void setRole(RoleEntity role) {
+        this.role = role;
+    }
+
     public UserStatus getStatus() {
         return status;
     }
@@ -62,29 +87,5 @@ public class UserEntity {
 
     public void setEvents(Set<EventEntity> events) {
         this.events = events;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
     }
 }

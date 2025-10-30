@@ -5,7 +5,6 @@ import com.example.filemanager.config.status.UserStatus;
 import com.example.filemanager.entity.UserEntity;
 import com.example.filemanager.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -53,13 +51,13 @@ public class SecurityService {
 
     private TokenDetails createToken(Map<String, Object> claims, String subjectId) {
         long expirationTimeInMillis = ApplicationConfig.getJwtExpiration() * 1000L;
-        Instant expirationAt = Instant.ofEpochSecond(expirationTimeInMillis);
+        Date expirationAt = new Date(expirationTimeInMillis);
 
         return createToken(expirationAt, claims, subjectId);
     }
 
-    private TokenDetails createToken(Instant expirationAt, Map<String, Object> claims, String subjectId) {
-        Instant createdAt = Instant.now();
+    private TokenDetails createToken(Date expirationAt, Map<String, Object> claims, String subjectId) {
+        Date createdAt = new Date();
 
         String token = Jwts.builder()
                 .claims(claims)
@@ -67,16 +65,17 @@ public class SecurityService {
                 .subject(subjectId)
                 .issuedAt(new Date())
                 .id(UUID.randomUUID().toString())
-                .expiration(Date.from(expirationAt))
+                .expiration(expirationAt)
                 .signWith(Keys.hmacShaKeyFor(ApplicationConfig.getEncoderSecret().getBytes(StandardCharsets.UTF_8)))
                 .compact();
 
-        return new TokenDetails.Builder()
-                .userid(Long.parseLong(subjectId))
-                .token(token)
-                .issuedAt(createdAt)
-                .expiresAt(expirationAt)
-                .build();
+        TokenDetails details = new TokenDetails();
+        details.setToken(token);
+        details.setExpiresAt(expirationAt);
+        details.setUserid(Long.parseLong(subjectId));
+        details.setIssuedAt(createdAt);
+
+        return details;
     }
 
 }
