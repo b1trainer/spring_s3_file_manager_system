@@ -1,6 +1,5 @@
 package com.example.filemanager.controller;
 
-import com.example.filemanager.config.UserRole;
 import com.example.filemanager.dto.AuthRequestDTO;
 import com.example.filemanager.dto.AuthResponseDTO;
 import com.example.filemanager.dto.UserDTO;
@@ -33,10 +32,9 @@ public class AuthController {
         if (userDTO.getUsername() == null ||
                 userDTO.getUsername().isEmpty() ||
                 userDTO.getPassword() == null ||
-                userDTO.getPassword().isEmpty() ||
-                userDTO.getRole() == UserRole.ADMIN
+                userDTO.getPassword().isEmpty()
         ) {
-            return Mono.error(new InvalidCredentialsException("Invalid credentials"));
+            return Mono.error(new InvalidCredentialsException());
         }
 
         UserEntity entity = userMapper.map(userDTO);

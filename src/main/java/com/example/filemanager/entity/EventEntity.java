@@ -1,31 +1,25 @@
 package com.example.filemanager.entity;
 
 import com.example.filemanager.config.status.EventStatus;
-import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
 
-@Entity
-@Table(name = "events")
+@Table("events")
 public class EventEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+    private UserEntity user;
+
+    private FileEntity file;
+
     private EventStatus status;
 
     @CreatedDate
     private Instant timestamp;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    @ManyToOne
-    @JoinColumn(name = "file_id")
-    private FileEntity file;
 
     public Long getId() {
         return id;

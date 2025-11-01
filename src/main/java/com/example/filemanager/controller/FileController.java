@@ -25,18 +25,16 @@ public class FileController {
     public Mono<ResponseEntity<FileDTO>> uploadFile(@RequestPart(name = "file") MultipartFile file) throws IOException {
         return fileService.loadFile(file)
                 .map(ResponseEntity::ok);
-    } // @RequestBody fileDto, @RequestPart(name = "file") MultipartFile file ??
+    }
 
     @GetMapping("/{fileId}")
-    public Mono<Object> getFile(@PathVariable String fileId) {
-
-        FileDTO fileDTO = fileService.getFile(fileId);
-
-        return Mono.just(ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(fileDTO.getContentType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + fileDTO.getName() + "\"")
-                .body(fileDTO.getContent()));
+    public Mono<ResponseEntity<byte[]>> getFile(@PathVariable String fileId) {
+        return fileService.getFile(fileId).map(file ->
+                ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(file.response().contentType()))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, file.response().contentDisposition())
+                        .body(file.asByteArray())
+        ).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{fileId}")

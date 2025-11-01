@@ -1,27 +1,19 @@
 package com.example.filemanager.entity;
 
 import com.example.filemanager.config.status.FileStatus;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@Table(name = "files")
+@Table("files")
 public class FileEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
     private String location;
 
-    @Enumerated(EnumType.STRING)
     private FileStatus status;
-
-    @OneToMany(mappedBy = "file", fetch = FetchType.LAZY)
-    private Set<EventEntity> events = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -53,13 +45,5 @@ public class FileEntity {
 
     public void setStatus(FileStatus status) {
         this.status = status;
-    }
-
-    public Set<EventEntity> getEvents() {
-        return events;
-    }
-
-    public void setEvents(Set<EventEntity> events) {
-        this.events = events;
     }
 }

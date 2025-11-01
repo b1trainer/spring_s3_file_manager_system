@@ -9,9 +9,6 @@ public class ApplicationConfig {
     private ApplicationConfig() {
     }
 
-    @Value("${aws.s3.bucket.name}")
-    private static String bucketName;
-
     @Value("${jwt.password.encoder.iterations}")
     private static Integer iterations;
 
@@ -29,10 +26,6 @@ public class ApplicationConfig {
 
     @Value("${jwt.secret}")
     private static String jwtSecret;
-
-    public static String getBucketName() {
-        return bucketName;
-    }
 
     public static String getEncoderSecret() {
         return encoderSecret;

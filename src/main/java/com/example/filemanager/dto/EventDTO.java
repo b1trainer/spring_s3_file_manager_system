@@ -50,13 +50,4 @@ public class EventDTO {
         this.timestamp = timestamp;
     }
 
-    @Override
-    public String toString() {
-        return "EventDTO{" +
-                "user=" + user +
-                ", file=" + file +
-                ", status=" + status +
-                ", timestamp='" + timestamp + '\'' +
-                '}';
-    }
 }

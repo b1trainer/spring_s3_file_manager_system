@@ -26,8 +26,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 
-    implementation "org.hibernate.orm:hibernate-core:$hibernateCore"
-
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
 

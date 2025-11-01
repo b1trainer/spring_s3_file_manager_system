@@ -23,7 +23,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
         return userRepository.findById(principal.getId())
-                .filter(u -> !u.getStatus().equals(UserStatus.DELETED))
+                .filter(u -> !u.getStatus().equals(UserStatus.BLOCKED))
                 .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found")))
                 .map(u -> authentication);
     }

@@ -4,14 +4,10 @@ import com.example.filemanager.config.UserRole;
 import com.example.filemanager.config.status.UserStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 public class UserDTO {
     private String username;
 
     private UserStatus status;
-
-    private List<EventDTO> events;
 
     private UserRole role;
 
@@ -23,10 +19,9 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(String username, UserStatus status, List<EventDTO> events, UserRole role, String password, String createdAt) {
+    public UserDTO(String username, UserStatus status, UserRole role, String password, String createdAt) {
         this.username = username;
         this.status = status;
-        this.events = events;
         this.role = role;
         this.password = password;
         this.createdAt = createdAt;
@@ -46,14 +41,6 @@ public class UserDTO {
 
     public void setStatus(UserStatus status) {
         this.status = status;
-    }
-
-    public List<EventDTO> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<EventDTO> events) {
-        this.events = events;
     }
 
     public UserRole getRole() {
