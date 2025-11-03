@@ -39,7 +39,7 @@ public class FileServiceImpl implements FileService {
     public Mono<ResponseBytes<GetObjectResponse>> getFile(String fileId) {
         Long id = Long.parseLong(fileId);
 
-        return fileRepository.findFileEntityById(id)
+        return fileRepository.findById(id)
                 .flatMap(fileEntity -> minioS3Service.getObjectFromS3(fileEntity.getLocation()));
     }
 
@@ -64,8 +64,15 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Mono<FileDTO> updateFile(String fileId, FileDTO fileDTO) {
-        return null;
+    @Transactional
+    public Mono<Void> updateFileStatus(String fileId, FileStatus status) {
+        Long id = Long.parseLong(fileId);
+
+        return fileRepository.findById(id)
+                .flatMap(fileEntity -> {
+                    fileEntity.setStatus(status);
+                    return Mono.empty();
+                });
     }
 
     @Override
@@ -73,7 +80,7 @@ public class FileServiceImpl implements FileService {
     public Mono<Void> deleteFile(String fileId) {
         Long id = Long.parseLong(fileId);
 
-        return fileRepository.findFileEntityById(id)
+        return fileRepository.findById(id)
                 .flatMap(fileEntity ->
                         minioS3Service.deleteObjectFromS3(fileEntity.getLocation())
                                 .thenReturn(fileEntity)
@@ -87,7 +94,7 @@ public class FileServiceImpl implements FileService {
 
     private EventEntity createEvent(FileEntity fileEntity, EventStatus eventStatus) {
         EventEntity event = new EventEntity();
-        event.setFile(fileEntity);
+        event.setFileId(fileEntity.getId());
         event.setStatus(eventStatus);
         event.setTimestamp(Instant.now());
         // event.setUser(); ???

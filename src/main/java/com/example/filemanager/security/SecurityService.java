@@ -1,8 +1,8 @@
 package com.example.filemanager.security;
 
 import com.example.filemanager.config.ApplicationConfig;
-import com.example.filemanager.config.status.UserStatus;
 import com.example.filemanager.entity.UserEntity;
+import com.example.filemanager.exceptions.InvalidCredentialsException;
 import com.example.filemanager.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -28,12 +28,8 @@ public class SecurityService {
     public Mono<TokenDetails> authenticate(String username, String password) {
         return userRepository.findByUsername(username)
                 .flatMap(user -> {
-                    if (user.getStatus().equals(UserStatus.DELETED)) {
-                        return Mono.error(new UsernameNotFoundException("Username not found"));
-                    }
-
                     if (!passwordEncoder.matches(password, user.getPassword())) {
-                        return Mono.error(new UsernameNotFoundException("Invalid password"));
+                        return Mono.error(new InvalidCredentialsException("Invalid password"));
                     }
 
                     return Mono.just(createToken(user));
@@ -43,8 +39,9 @@ public class SecurityService {
 
     private TokenDetails createToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRole());
+        claims.put("role", user.getRole().getRoleName());
         claims.put("username", user.getUsername());
+        claims.put("status", user.getStatus().getStatusValue());
 
         return createToken(claims, user.getId().toString());
     }

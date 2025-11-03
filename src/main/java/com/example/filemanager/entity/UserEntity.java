@@ -17,7 +17,7 @@ public class UserEntity {
 
     private String password;
 
-    private RoleEntity role;
+    private UserRole role;
 
     private UserStatus status;
 
@@ -56,11 +56,11 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
-    public RoleEntity getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(RoleEntity role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 

@@ -1,8 +1,10 @@
 package com.example.filemanager.controller;
 
+import com.example.filemanager.config.status.FileStatus;
 import com.example.filemanager.dto.FileDTO;
 import com.example.filemanager.service.FileService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,7 @@ public class FileController {
     @PostMapping
     public Mono<ResponseEntity<FileDTO>> uploadFile(@RequestPart(name = "file") MultipartFile file) throws IOException {
         return fileService.loadFile(file)
-                .map(ResponseEntity::ok);
+                .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
     }
 
     @GetMapping("/{fileId}")
@@ -37,10 +39,10 @@ public class FileController {
         ).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{fileId}")
-    public Mono<ResponseEntity<FileDTO>> updateFile(@PathVariable String fileId, @RequestBody FileDTO fileDTO) {
-        return fileService.updateFile(fileId, fileDTO)
-                .map(ResponseEntity::ok);
+    @PatchMapping("/{fileId}/{status}")
+    public Mono<ResponseEntity<FileDTO>> updateFileStatus(@PathVariable String fileId, @PathVariable FileStatus status) {
+        return fileService.updateFileStatus(fileId, status)
+                .then(Mono.just(ResponseEntity.ok().build()));
     }
 
     @DeleteMapping("/{fileId}")

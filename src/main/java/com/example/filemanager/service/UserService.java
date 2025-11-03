@@ -4,11 +4,11 @@ import com.example.filemanager.dto.UserDTO;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
-    public Mono<UserDTO> getUser(String id);
+    Mono<UserDTO> getUser(String id);
 
-    public Mono<UserDTO> createUser(UserDTO userDTO);
+    Mono<UserDTO> createUser(UserDTO userDTO);
 
-    public Mono<UserDTO> updateUser(String userId, UserDTO userDTO);
+    Mono<Void> updateUser(String userId, UserDTO userDTO);
 
-    public Mono<Void> deleteUser(String id);
+    Mono<Void> deleteUser(String id);
 }

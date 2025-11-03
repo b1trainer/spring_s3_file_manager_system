@@ -1,12 +1,15 @@
 package com.example.filemanager.config;
 
+import com.example.filemanager.config.status.UserStatus;
 import com.example.filemanager.security.AuthenticationManager;
 import com.example.filemanager.security.BearerTokenServerAuthenticationConverter;
+import com.example.filemanager.security.CustomPrincipal;
 import com.example.filemanager.security.JwtHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -20,7 +23,9 @@ import reactor.core.publisher.Mono;
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
-    private final String[] routes = {"/rest/v1/auth/signIn", "/rest/v1/auth/logIn"};
+    private final String[] NO_AUTH_ROUTES = {"/rest/v1/auth/signIn", "/rest/v1/auth/logIn"};
+    private final String[] MODERATOR_ROUTES = {};
+    private final String[] DEFAULT_USER_ROUTES = {};
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http, AuthenticationManager authenticationManager) {
@@ -29,7 +34,10 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> {
                     exchange.anyExchange().authenticated();
                     exchange.pathMatchers(HttpMethod.OPTIONS).permitAll();
-                    exchange.pathMatchers(routes).permitAll();
+                    exchange.pathMatchers(NO_AUTH_ROUTES).permitAll();
+                    exchange.pathMatchers("/**").hasRole(UserRole.ADMIN.getRoleName());
+                    exchange.pathMatchers(MODERATOR_ROUTES).hasRole(UserRole.MODERATOR.getRoleName());
+                    exchange.pathMatchers(DEFAULT_USER_ROUTES).hasRole(UserRole.USER.getRoleName());
                 })
                 .exceptionHandling(e -> {
                             e.authenticationEntryPoint((swe, authException) -> Mono.fromRunnable(

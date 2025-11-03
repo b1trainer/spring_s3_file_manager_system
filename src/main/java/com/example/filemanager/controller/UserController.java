@@ -29,10 +29,10 @@ public class UserController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public Mono<ResponseEntity<UserDTO>> updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO) {
         return userService.updateUser(userId, userDTO)
-                .map(ResponseEntity::ok);
+                .then(Mono.just(ResponseEntity.ok().build()));
     }
 
     @DeleteMapping("/{userId}")

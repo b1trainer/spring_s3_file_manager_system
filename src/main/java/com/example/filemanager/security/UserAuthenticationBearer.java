@@ -16,10 +16,11 @@ public class UserAuthenticationBearer {
         String subject = claims.getSubject();
         String role = claims.get("role", String.class);
         String username = claims.get("username", String.class);
+        String status = claims.get("status", String.class);
         Long principalId = Long.parseLong(subject);
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-        CustomPrincipal principal = new CustomPrincipal(principalId, username);
+        CustomPrincipal principal = new CustomPrincipal(principalId, username, status);
 
         return Mono.justOrEmpty(new UsernamePasswordAuthenticationToken(principal, null, authorities));
     }

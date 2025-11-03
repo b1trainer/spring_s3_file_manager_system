@@ -1,14 +1,15 @@
 package com.example.filemanager.service;
 
+import com.example.filemanager.config.status.EventStatus;
 import com.example.filemanager.dto.EventDTO;
 import reactor.core.publisher.Mono;
 
 public interface EventService {
-    public Mono<EventDTO> getEvent(String id);
+    Mono<EventDTO> getEvent(String id);
 
-    public Mono<EventDTO> createEvent(EventDTO eventDTO);
+    Mono<EventDTO> createEvent(EventDTO eventDTO);
 
-    public Mono<EventDTO> updateEvent(String eventId, EventDTO eventDTO);
+    Mono<Void> updateEventStatus(String eventId, EventStatus status);
 
-    public Mono<Void> deleteEvent(String id);
+    Mono<Void> deleteEvent(String id);
 }

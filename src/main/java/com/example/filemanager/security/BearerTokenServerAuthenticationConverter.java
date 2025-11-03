@@ -36,5 +36,4 @@ public class BearerTokenServerAuthenticationConverter implements ServerAuthentic
                         .getFirst(HttpHeaders.AUTHORIZATION)
         );
     }
-
 }

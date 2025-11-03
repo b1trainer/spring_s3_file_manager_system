@@ -7,6 +7,4 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface FileRepository extends R2dbcRepository<FileEntity, Long> {
-
-    Mono<FileEntity> findFileEntityById(Long id);
 }

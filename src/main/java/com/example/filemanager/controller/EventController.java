@@ -1,5 +1,6 @@
 package com.example.filemanager.controller;
 
+import com.example.filemanager.config.status.EventStatus;
 import com.example.filemanager.dto.EventDTO;
 import com.example.filemanager.service.EventService;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ public class EventController {
         this.eventService = eventService;
     }
 
+
     @PostMapping
     public Mono<ResponseEntity<EventDTO>> createEvent(@RequestBody EventDTO eventDTO) {
         return eventService.createEvent(eventDTO)
@@ -29,10 +31,10 @@ public class EventController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{eventId}")
-    public Mono<ResponseEntity<EventDTO>> updateEvent(@PathVariable String eventId, @RequestBody EventDTO eventDTO) {
-        return eventService.updateEvent(eventId, eventDTO)
-                .map(ResponseEntity::ok);
+    @PatchMapping("/{eventId}/{status}")
+    public Mono<ResponseEntity<EventDTO>> updateEvent(@PathVariable String eventId, @PathVariable EventStatus status) {
+        return eventService.updateEventStatus(eventId, status)
+                .then(Mono.just(ResponseEntity.ok().build()));
     }
 
     @DeleteMapping("/{eventId}")

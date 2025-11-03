@@ -1,7 +1,5 @@
 package com.example.filemanager.security;
 
-import com.example.filemanager.config.status.UserStatus;
-import com.example.filemanager.entity.UserEntity;
 import com.example.filemanager.repository.UserRepository;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -23,7 +21,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
         return userRepository.findById(principal.getId())
-                .filter(u -> !u.getStatus().equals(UserStatus.BLOCKED))
                 .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found")))
                 .map(u -> authentication);
     }

@@ -1,5 +1,7 @@
 package com.example.filemanager.security;
 
+import com.example.filemanager.config.status.UserStatus;
+import com.example.filemanager.exceptions.UserBlockedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -34,10 +36,17 @@ public class JwtHandler {
 
     private Verification verify(String token) {
         Claims claims = parseClaims(token);
+
         final Date expiry = claims.getExpiration();
 
         if (expiry.before(new Date())) {
             throw new RuntimeException("Token expired");
+        }
+
+        final String status = claims.get("status", String.class);
+
+        if (status.equals(UserStatus.BLOCKED.getStatusValue())) {
+            throw new RuntimeException("User is blocked");
         }
 
         return new Verification(claims, token);

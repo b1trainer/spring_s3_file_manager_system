@@ -3,35 +3,35 @@ package com.example.filemanager.dto;
 import com.example.filemanager.config.status.EventStatus;
 
 public class EventDTO {
-    private UserDTO user;
-    private FileDTO file;
+    private Long userId;
+    private Long fileId;
     private EventStatus status;
     private String timestamp;
 
     public EventDTO() {
     }
 
-    public EventDTO(UserDTO user, FileDTO file, EventStatus status, String timestamp) {
-        this.user = user;
-        this.file = file;
+    public EventDTO(Long userId, Long fileId, EventStatus status, String timestamp) {
+        this.userId = userId;
+        this.fileId = fileId;
         this.status = status;
         this.timestamp = timestamp;
     }
 
-    public UserDTO getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(UserDTO user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public FileDTO getFile() {
-        return file;
+    public Long getFileId() {
+        return fileId;
     }
 
-    public void setFile(FileDTO file) {
-        this.file = file;
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
     }
 
     public EventStatus getStatus() {
@@ -49,5 +49,4 @@ public class EventDTO {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
-
 }

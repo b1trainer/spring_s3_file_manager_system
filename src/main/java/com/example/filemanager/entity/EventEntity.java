@@ -12,9 +12,9 @@ public class EventEntity {
     @Id
     private Long id;
 
-    private UserEntity user;
+    private Long userId;
 
-    private FileEntity file;
+    private Long fileId;
 
     private EventStatus status;
 
@@ -45,19 +45,19 @@ public class EventEntity {
         this.timestamp = timestamp;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public FileEntity getFile() {
-        return file;
+    public Long getFileId() {
+        return fileId;
     }
 
-    public void setFile(FileEntity file) {
-        this.file = file;
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
     }
 }
