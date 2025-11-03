@@ -4,7 +4,6 @@ import com.example.filemanager.dto.UserDTO;
 import com.example.filemanager.mapper.UserMapper;
 import com.example.filemanager.repository.UserRepository;
 import com.example.filemanager.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 

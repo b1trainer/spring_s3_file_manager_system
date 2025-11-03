@@ -1,7 +1,6 @@
 package com.example.filemanager.security;
 
 import com.example.filemanager.config.status.UserStatus;
-import com.example.filemanager.exceptions.UserBlockedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;

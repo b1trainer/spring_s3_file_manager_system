@@ -8,8 +8,7 @@ import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
 @EnableR2dbcAuditing
 public class FileManagerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FileManagerApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(FileManagerApplication.class, args);
+    }
 }

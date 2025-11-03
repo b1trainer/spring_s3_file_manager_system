@@ -43,23 +43,23 @@ public class SecurityService {
         claims.put("username", user.getUsername());
         claims.put("status", user.getStatus().getStatusValue());
 
-        return createToken(claims, user.getId().toString());
+        return createToken(claims, user.getId());
     }
 
-    private TokenDetails createToken(Map<String, Object> claims, String subjectId) {
+    private TokenDetails createToken(Map<String, Object> claims, Long subjectId) {
         long expirationTimeInMillis = ApplicationConfig.getJwtExpiration() * 1000L;
         Date expirationAt = new Date(expirationTimeInMillis);
 
         return createToken(expirationAt, claims, subjectId);
     }
 
-    private TokenDetails createToken(Date expirationAt, Map<String, Object> claims, String subjectId) {
+    private TokenDetails createToken(Date expirationAt, Map<String, Object> claims, Long userId) {
         Date createdAt = new Date();
 
         String token = Jwts.builder()
                 .claims(claims)
                 .issuer(ApplicationConfig.getJwtIssuer())
-                .subject(subjectId)
+                .subject(userId.toString())
                 .issuedAt(new Date())
                 .id(UUID.randomUUID().toString())
                 .expiration(expirationAt)
@@ -69,7 +69,7 @@ public class SecurityService {
         TokenDetails details = new TokenDetails();
         details.setToken(token);
         details.setExpiresAt(expirationAt);
-        details.setUserid(Long.parseLong(subjectId));
+        details.setUserid(userId);
         details.setIssuedAt(createdAt);
 
         return details;

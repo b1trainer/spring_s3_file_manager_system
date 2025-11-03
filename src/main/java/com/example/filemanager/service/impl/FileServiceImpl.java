@@ -45,13 +45,14 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public Mono<FileDTO> loadFile(MultipartFile file) {
+    public Mono<FileDTO> loadFile(MultipartFile file, Long userId) {
         String location = S3Config.getBucket() + "/" + file.getOriginalFilename();
 
         FileDTO fileDTO = new FileDTO();
         fileDTO.setLocation(location);
         fileDTO.setName(file.getOriginalFilename());
         fileDTO.setStatus(FileStatus.ACTIVE);
+        fileDTO.setUserId(userId);
 
         return minioS3Service.putObjectToS3(location, file)
                 .flatMap(res -> fileRepository.save(fileMapper.map(fileDTO)))
@@ -94,10 +95,12 @@ public class FileServiceImpl implements FileService {
 
     private EventEntity createEvent(FileEntity fileEntity, EventStatus eventStatus) {
         EventEntity event = new EventEntity();
-        event.setFileId(fileEntity.getId());
+        if (fileEntity != null) {
+            event.setFileId(fileEntity.getId());
+            event.setUserId(fileEntity.getUserId());
+        }
         event.setStatus(eventStatus);
         event.setTimestamp(Instant.now());
-        // event.setUser(); ???
         return event;
     }
 }

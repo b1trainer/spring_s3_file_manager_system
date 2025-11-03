@@ -17,7 +17,6 @@ public class EventController {
         this.eventService = eventService;
     }
 
-
     @PostMapping
     public Mono<ResponseEntity<EventDTO>> createEvent(@RequestBody EventDTO eventDTO) {
         return eventService.createEvent(eventDTO)

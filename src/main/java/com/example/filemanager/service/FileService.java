@@ -12,7 +12,7 @@ import java.io.IOException;
 public interface FileService {
     Mono<ResponseBytes<GetObjectResponse>> getFile(String location);
 
-    Mono<FileDTO> loadFile(MultipartFile file) throws IOException;
+    Mono<FileDTO> loadFile(MultipartFile file, Long userId) throws IOException;
 
     Mono<Void> updateFileStatus(String fileId, FileStatus status);
 

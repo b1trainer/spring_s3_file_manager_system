@@ -6,14 +6,16 @@ public class FileDTO {
     private String name;
     private String location;
     private FileStatus status;
+    private Long userId;
 
     public FileDTO() {
     }
 
-    public FileDTO(String name, String location, FileStatus status) {
+    public FileDTO(String name, String location, FileStatus status, Long userId) {
         this.name = name;
         this.location = location;
         this.status = status;
+        this.userId = userId;
     }
 
     public String getName() {
@@ -40,4 +42,11 @@ public class FileDTO {
         this.status = status;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }

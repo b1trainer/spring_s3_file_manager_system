@@ -2,11 +2,14 @@ package com.example.filemanager.controller;
 
 import com.example.filemanager.config.status.FileStatus;
 import com.example.filemanager.dto.FileDTO;
+import com.example.filemanager.security.CustomPrincipal;
 import com.example.filemanager.service.FileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
@@ -24,8 +27,10 @@ public class FileController {
     }
 
     @PostMapping
-    public Mono<ResponseEntity<FileDTO>> uploadFile(@RequestPart(name = "file") MultipartFile file) throws IOException {
-        return fileService.loadFile(file)
+    public Mono<ResponseEntity<FileDTO>> uploadFile(@AuthenticationPrincipal Authentication auth,
+                                                    @RequestPart(name = "file") MultipartFile file) throws IOException {
+        CustomPrincipal principal = (CustomPrincipal) auth.getPrincipal();
+        return fileService.loadFile(file, principal.getId())
                 .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
     }
 
