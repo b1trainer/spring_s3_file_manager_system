@@ -33,6 +33,7 @@ public class SecurityConfig {
                                 .pathMatchers("/**").hasRole(UserRole.ADMIN.getRoleName())
                                 .pathMatchers(MODERATOR_ROUTES).hasRole(UserRole.MODERATOR.getRoleName())
                                 .pathMatchers(DEFAULT_USER_ROUTES).hasRole(UserRole.USER.getRoleName())
+                                .pathMatchers("/rest/v1/auth/info").authenticated()
                                 .anyExchange().authenticated()
                 )
                 .exceptionHandling(exception ->

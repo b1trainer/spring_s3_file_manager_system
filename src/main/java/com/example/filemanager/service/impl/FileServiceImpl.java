@@ -19,6 +19,7 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -43,6 +44,12 @@ public class FileServiceImpl implements FileService {
 
         return fileRepository.findById(id)
                 .flatMap(fileEntity -> minioS3Service.getObjectFromS3(fileEntity.getLocation()));
+    }
+
+    @Override
+    public Mono<List<FileDTO>> findFilesForUser(Long userId) {
+        return fileRepository.findAllByUserId(userId).flatMap(files ->
+                Mono.just(files.stream().map(fileMapper::map).toList()));
     }
 
     @Override

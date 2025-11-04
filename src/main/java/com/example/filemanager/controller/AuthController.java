@@ -9,7 +9,6 @@ import com.example.filemanager.mapper.UserMapper;
 import com.example.filemanager.repository.UserRepository;
 import com.example.filemanager.security.CustomPrincipal;
 import com.example.filemanager.security.SecurityService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

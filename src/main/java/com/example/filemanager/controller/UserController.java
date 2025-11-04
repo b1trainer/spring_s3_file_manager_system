@@ -3,6 +3,7 @@ package com.example.filemanager.controller;
 import com.example.filemanager.dto.UserDTO;
 import com.example.filemanager.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -16,6 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Secured("ADMIN")
     @PostMapping
     public Mono<ResponseEntity<UserDTO>> createUser(@RequestBody UserDTO userDTO) {
         return userService.createUser(userDTO)
@@ -35,6 +37,7 @@ public class UserController {
                 .then(Mono.just(ResponseEntity.ok().build()));
     }
 
+    @Secured("ADMIN")
     @DeleteMapping("/{userId}")
     public Mono<ResponseEntity<Void>> deleteUser(@PathVariable String userId) {
         return userService.deleteUser(userId)
