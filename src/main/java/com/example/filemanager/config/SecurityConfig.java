@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 public class SecurityConfig {
 
     private final String[] NO_AUTH_ROUTES = {"/rest/v1/auth/signIn", "/rest/v1/auth/logIn"};
-    private final String[] MODERATOR_ROUTES = {"/rest/v1/files/**", "/rest/v1/events/**", "/rest/v1/users/*"};
+    private final String[] MODERATOR_ROUTES = {"/rest/v1/files/**", "/rest/v1/events/**", "/rest/v1/users/**"};
     private final String[] DEFAULT_USER_ROUTES = {"/rest/v1/files/**"};
 
     @Bean
