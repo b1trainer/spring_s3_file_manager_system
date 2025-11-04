@@ -30,11 +30,12 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
 
     implementation "org.mapstruct:mapstruct:$mapstruct"
-    implementation "org.mapstruct:mapstruct-processor:$mapstruct"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapstruct"
 
     implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'io.asyncer:r2dbc-mysql:1.4.0'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

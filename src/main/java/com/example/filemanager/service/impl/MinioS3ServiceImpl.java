@@ -14,16 +14,18 @@ import software.amazon.awssdk.services.s3.model.*;
 public class MinioS3ServiceImpl implements MinioS3Service {
 
     private final S3Client s3Client;
+    private final S3Config s3Config;
 
-    public MinioS3ServiceImpl(S3Client s3Client) {
+    public MinioS3ServiceImpl(S3Client s3Client, S3Config s3Config) {
         this.s3Client = s3Client;
+        this.s3Config = s3Config;
     }
 
     public Mono<ResponseBytes<GetObjectResponse>> getObjectFromS3(String location) {
         return Mono.fromCallable(() -> s3Client.getObjectAsBytes(
                 GetObjectRequest.builder()
                         .key(location)
-                        .bucket(S3Config.getBucket())
+                        .bucket(s3Config.getBucket())
                         .build())
         );
     }
@@ -32,7 +34,7 @@ public class MinioS3ServiceImpl implements MinioS3Service {
         return Mono.fromCallable(() ->
                 s3Client.putObject(PutObjectRequest.builder()
                                 .key(location)
-                                .bucket(S3Config.getBucket())
+                                .bucket(s3Config.getBucket())
                                 .contentType(file.getContentType())
                                 .build(),
                         RequestBody.fromBytes(file.getBytes()))
@@ -43,7 +45,7 @@ public class MinioS3ServiceImpl implements MinioS3Service {
         return Mono.fromCallable(() ->
                 s3Client.deleteObject(DeleteObjectRequest.builder()
                         .key(location)
-                        .bucket(S3Config.getBucket())
+                        .bucket(s3Config.getBucket())
                         .build())
         );
     }

@@ -15,6 +15,12 @@ public class Encoder implements PasswordEncoder {
 
     private static final String SECRET_KEY_INSTANCE = "PBKDF2WithHmacSHA256";
 
+    private final ApplicationConfig applicationConfig;
+
+    public Encoder(ApplicationConfig applicationConfig) {
+        this.applicationConfig = applicationConfig;
+    }
+
     @Override
     public String encode(CharSequence rawPassword) {
         try {
@@ -22,9 +28,9 @@ public class Encoder implements PasswordEncoder {
                     SecretKeyFactory
                             .getInstance(SECRET_KEY_INSTANCE)
                             .generateSecret(new PBEKeySpec(rawPassword.toString().toCharArray(),
-                                    ApplicationConfig.getEncoderSecret().getBytes(),
-                                    ApplicationConfig.getIterations(),
-                                    ApplicationConfig.getKeyLength()))
+                                    applicationConfig.getEncoderSecret().getBytes(),
+                                    applicationConfig.getIterations(),
+                                    applicationConfig.getKeyLength()))
                             .getEncoded()
             );
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {

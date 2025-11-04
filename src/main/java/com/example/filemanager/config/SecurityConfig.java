@@ -20,27 +20,28 @@ import reactor.core.publisher.Mono;
 public class SecurityConfig {
 
     private final String[] NO_AUTH_ROUTES = {"/rest/v1/auth/signIn", "/rest/v1/auth/logIn"};
-    private final String[] MODERATOR_ROUTES = {};
-    private final String[] DEFAULT_USER_ROUTES = {};
+    private final String[] MODERATOR_ROUTES = {"/rest/v1/files/**", "/rest/v1/events/**", "/rest/v1/users/*"};
+    private final String[] DEFAULT_USER_ROUTES = {"/rest/v1/files/**"};
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http, AuthenticationManager authenticationManager) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchange -> {
-                    exchange.anyExchange().authenticated();
-                    exchange.pathMatchers(HttpMethod.OPTIONS).permitAll();
-                    exchange.pathMatchers(NO_AUTH_ROUTES).permitAll();
-                    exchange.pathMatchers("/**").hasRole(UserRole.ADMIN.getRoleName());
-                    exchange.pathMatchers(MODERATOR_ROUTES).hasRole(UserRole.MODERATOR.getRoleName());
-                    exchange.pathMatchers(DEFAULT_USER_ROUTES).hasRole(UserRole.USER.getRoleName());
-                })
-                .exceptionHandling(e -> {
-                            e.authenticationEntryPoint((swe, authException) -> Mono.fromRunnable(
-                                    () -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)));
-                            e.accessDeniedHandler((swe, authException) -> Mono.fromRunnable(
-                                    () -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN)));
-                        }
+                .authorizeExchange(exchange ->
+                        exchange
+                                .pathMatchers(HttpMethod.OPTIONS, NO_AUTH_ROUTES).permitAll()
+                                .pathMatchers("/**").hasRole(UserRole.ADMIN.getRoleName())
+                                .pathMatchers(MODERATOR_ROUTES).hasRole(UserRole.MODERATOR.getRoleName())
+                                .pathMatchers(DEFAULT_USER_ROUTES).hasRole(UserRole.USER.getRoleName())
+                                .anyExchange().authenticated()
+                )
+                .exceptionHandling(exception ->
+                        exception
+                                .authenticationEntryPoint((swe, authException) -> Mono.fromRunnable(
+                                        () -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)))
+                                .accessDeniedHandler((swe, authException) -> Mono.fromRunnable(
+                                        () -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN)))
+
                 )
                 .addFilterAt(bearerAuthFilter(authenticationManager), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
@@ -49,7 +50,7 @@ public class SecurityConfig {
     private AuthenticationWebFilter bearerAuthFilter(AuthenticationManager authenticationManager) {
         AuthenticationWebFilter authFilter = new AuthenticationWebFilter(authenticationManager);
         authFilter.setServerAuthenticationConverter(
-                new BearerTokenServerAuthenticationConverter(new JwtHandler(ApplicationConfig.getJwtSecret()))
+                new BearerTokenServerAuthenticationConverter(new JwtHandler())
         );
         authFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
 

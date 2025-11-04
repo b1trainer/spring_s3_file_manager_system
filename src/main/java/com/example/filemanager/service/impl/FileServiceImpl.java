@@ -27,12 +27,14 @@ public class FileServiceImpl implements FileService {
     private final EventRepository eventRepository;
     private final MinioS3Service minioS3Service;
     private final FileMapper fileMapper;
+    private final S3Config s3Config;
 
-    public FileServiceImpl(FileRepository fileRepository, EventRepository eventRepository, MinioS3Service minioS3Service, FileMapper fileMapper) {
+    public FileServiceImpl(FileRepository fileRepository, EventRepository eventRepository, MinioS3Service minioS3Service, FileMapper fileMapper, S3Config s3Config) {
         this.fileRepository = fileRepository;
         this.eventRepository = eventRepository;
         this.minioS3Service = minioS3Service;
         this.fileMapper = fileMapper;
+        this.s3Config = s3Config;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public Mono<FileDTO> loadFile(MultipartFile file, Long userId) {
-        String location = S3Config.getBucket() + "/" + file.getOriginalFilename();
+        String location = s3Config.getBucket() + "/" + file.getOriginalFilename();
 
         FileDTO fileDTO = new FileDTO();
         fileDTO.setLocation(location);

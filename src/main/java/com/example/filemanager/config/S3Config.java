@@ -15,22 +15,22 @@ import java.net.URI;
 public class S3Config {
 
     @Value("${minio.region}")
-    private static String region;
+    private String region;
 
     @Value("${minio.bucket}")
-    private static String bucket;
+    private String bucket;
 
     @Value("${minio.endpoint}")
-    private static String endpoint;
+    private String endpoint;
 
     @Value("${minio.access-key}")
-    private static String accessKey;
+    private String accessKey;
 
     @Value("${minio.secret-key}")
-    private static String secretKey;
+    private String secretKey;
 
     @Bean
-    public static S3Client s3Client() {
+    public S3Client s3Client() {
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(
@@ -43,23 +43,23 @@ public class S3Config {
                 .build();
     }
 
-    public static String getRegion() {
+    public String getRegion() {
         return region;
     }
 
-    public static String getBucket() {
+    public String getBucket() {
         return bucket;
     }
 
-    public static String getEndpoint() {
+    public String getEndpoint() {
         return endpoint;
     }
 
-    public static String getAccessKey() {
+    public String getAccessKey() {
         return accessKey;
     }
 
-    public static String getSecretKey() {
+    public String getSecretKey() {
         return secretKey;
     }
 }

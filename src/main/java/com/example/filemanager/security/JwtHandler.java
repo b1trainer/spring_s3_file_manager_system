@@ -7,15 +7,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Date;
 
 public class JwtHandler {
 
-    private final String secret;
-
-    public JwtHandler(String secret) {
-        this.secret = secret;
+    public JwtHandler() {
     }
 
     public static class Verification {
@@ -53,9 +50,15 @@ public class JwtHandler {
 
     private Claims parseClaims(String token) {
         JwtParser parser = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                .verifyWith(Keys.hmacShaKeyFor(generateRandomSHA256Secret()))
                 .build();
 
         return parser.parseSignedClaims(token).getPayload();
+    }
+
+    private byte[] generateRandomSHA256Secret() {
+        byte[] secret = new byte[32];
+        new SecureRandom().nextBytes(secret);
+        return secret;
     }
 }

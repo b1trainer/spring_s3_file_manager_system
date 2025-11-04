@@ -19,10 +19,12 @@ public class SecurityService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationConfig applicationConfig;
 
-    public SecurityService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public SecurityService(UserRepository userRepository, PasswordEncoder passwordEncoder, ApplicationConfig applicationConfig) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.applicationConfig = applicationConfig;
     }
 
     public Mono<TokenDetails> authenticate(String username, String password) {
@@ -47,7 +49,7 @@ public class SecurityService {
     }
 
     private TokenDetails createToken(Map<String, Object> claims, Long subjectId) {
-        long expirationTimeInMillis = ApplicationConfig.getJwtExpiration() * 1000L;
+        long expirationTimeInMillis = applicationConfig.getJwtExpiration() * 1000L;
         Date expirationAt = new Date(expirationTimeInMillis);
 
         return createToken(expirationAt, claims, subjectId);
@@ -58,12 +60,12 @@ public class SecurityService {
 
         String token = Jwts.builder()
                 .claims(claims)
-                .issuer(ApplicationConfig.getJwtIssuer())
+                .issuer(applicationConfig.getJwtIssuer())
                 .subject(userId.toString())
                 .issuedAt(new Date())
                 .id(UUID.randomUUID().toString())
                 .expiration(expirationAt)
-                .signWith(Keys.hmacShaKeyFor(ApplicationConfig.getEncoderSecret().getBytes(StandardCharsets.UTF_8)))
+                .signWith(Keys.hmacShaKeyFor(applicationConfig.getEncoderSecret().getBytes(StandardCharsets.UTF_8)))
                 .compact();
 
         TokenDetails details = new TokenDetails();
