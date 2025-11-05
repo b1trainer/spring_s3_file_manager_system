@@ -39,10 +39,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Mono<ResponseBytes<GetObjectResponse>> getFile(String fileId) {
-        Long id = Long.parseLong(fileId);
-
-        return fileRepository.findById(id)
+    public Mono<ResponseBytes<GetObjectResponse>> getFile(Long fileId) {
+        return fileRepository.findById(fileId)
                 .flatMap(fileEntity -> minioS3Service.getObjectFromS3(fileEntity.getLocation()));
     }
 
@@ -75,10 +73,8 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public Mono<Void> updateFileStatus(String fileId, FileStatus status) {
-        Long id = Long.parseLong(fileId);
-
-        return fileRepository.findById(id)
+    public Mono<Void> updateFileStatus(Long fileId, FileStatus status) {
+        return fileRepository.findById(fileId)
                 .flatMap(fileEntity -> {
                     fileEntity.setStatus(status);
                     return Mono.empty();
@@ -109,7 +105,6 @@ public class FileServiceImpl implements FileService {
             event.setUserId(fileEntity.getUserId());
         }
         event.setStatus(eventStatus);
-        event.setTimestamp(Instant.now());
         return event;
     }
 }

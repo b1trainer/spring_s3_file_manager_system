@@ -3,14 +3,17 @@ package com.example.filemanager.dto;
 import com.example.filemanager.config.UserRole;
 import com.example.filemanager.config.status.UserStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import software.amazon.awssdk.annotations.NotNull;
 
 public class UserDTO {
+    @NotNull
     private String username;
 
     private UserStatus status;
 
     private UserRole role;
 
+    @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

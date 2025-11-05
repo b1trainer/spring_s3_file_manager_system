@@ -24,20 +24,20 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}")
-    public Mono<ResponseEntity<EventDTO>> getEvent(@PathVariable String eventId) {
+    public Mono<ResponseEntity<EventDTO>> getEvent(@PathVariable Long eventId) {
         return eventService.getEvent(eventId)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{eventId}/{status}")
-    public Mono<ResponseEntity<EventDTO>> updateEvent(@PathVariable String eventId, @PathVariable EventStatus status) {
+    public Mono<ResponseEntity<EventDTO>> updateEvent(@PathVariable Long eventId, @PathVariable EventStatus status) {
         return eventService.updateEventStatus(eventId, status)
                 .then(Mono.just(ResponseEntity.ok().build()));
     }
 
     @DeleteMapping("/{eventId}")
-    public Mono<ResponseEntity<Void>> deleteEvent(@PathVariable String eventId) {
+    public Mono<ResponseEntity<Void>> deleteEvent(@PathVariable Long eventId) {
         return eventService.deleteEvent(eventId)
                 .then(Mono.just(ResponseEntity.noContent().build()));
     }

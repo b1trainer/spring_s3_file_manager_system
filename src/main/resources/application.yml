@@ -6,25 +6,25 @@ spring:
     name: file-manager
   r2dbc:
     url: r2dbc:pool:mysql://localhost:3306/file_manager
-    username: root
-    password: password
+    username: ${r2dbc.user}
+    password: ${r2dbc.password}
   flyway:
     url: jdbc:mysql://localhost:3306/file_manager
     locations: classpath:db/migration
-    user: root
-    password: password
+    user: ${flyway.user}
+    password: ${flyway.password}
 
 minio:
   endpoint: http://127.0.0.1:9000
-  access-key: admin
-  secret-key: password
+  access-key: ${minio.access-key}
+  secret-key: ${minio.secret-key}
   bucket: my-bucket
   region: us-east-1
 
 jwt:
   password:
     encoder:
-      secret: dmVyeXZlcnlzdHJvbmdzZWNyZXRwYXNzd29yZCE=
+      secret: ${jwt.password.encoder.secret}
       iterations: 64
       keyLength: 256
   expiration: 3600

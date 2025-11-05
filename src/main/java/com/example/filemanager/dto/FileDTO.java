@@ -1,11 +1,14 @@
 package com.example.filemanager.dto;
 
 import com.example.filemanager.config.status.FileStatus;
+import software.amazon.awssdk.annotations.NotNull;
 
 public class FileDTO {
     private String name;
+    @NotNull
     private String location;
     private FileStatus status;
+    @NotNull
     private Long userId;
 
     public FileDTO() {

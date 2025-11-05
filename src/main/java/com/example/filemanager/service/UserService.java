@@ -1,14 +1,17 @@
 package com.example.filemanager.service;
 
+import com.example.filemanager.dto.AuthRequestDTO;
 import com.example.filemanager.dto.UserDTO;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
-    Mono<UserDTO> getUser(String id);
+    Mono<UserDTO> getUser(Long userId);
 
     Mono<UserDTO> createUser(UserDTO userDTO);
 
-    Mono<Void> updateUser(String userId, UserDTO userDTO);
+    Mono<UserDTO> createUser(AuthRequestDTO authRequest);
 
-    Mono<Void> deleteUser(String id);
+    Mono<Void> updateUser(Long userId, UserDTO userDTO);
+
+    Mono<Void> deleteUser(Long userId);
 }

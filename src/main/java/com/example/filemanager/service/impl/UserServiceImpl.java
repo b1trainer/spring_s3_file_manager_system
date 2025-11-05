@@ -1,10 +1,15 @@
 package com.example.filemanager.service.impl;
 
+import com.example.filemanager.config.UserRole;
+import com.example.filemanager.config.status.UserStatus;
+import com.example.filemanager.dto.AuthRequestDTO;
 import com.example.filemanager.dto.UserDTO;
+import com.example.filemanager.entity.UserEntity;
 import com.example.filemanager.mapper.UserMapper;
 import com.example.filemanager.repository.UserRepository;
 import com.example.filemanager.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -19,25 +24,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<UserDTO> getUser(String userId) {
-        Long id = Long.parseLong(userId);
-
-        return userRepository.findById(id).flatMap(userEntity -> {
+    public Mono<UserDTO> getUser(Long userId) {
+        return userRepository.findById(userId).flatMap(userEntity -> {
             UserDTO userDTO = userMapper.map(userEntity);
             return Mono.just(userDTO);
         });
     }
 
     @Override
+    @Transactional
     public Mono<UserDTO> createUser(UserDTO userDTO) {
-        return null;
+        UserEntity userEntity = userMapper.map(userDTO);
+        return userRepository.save(userEntity).map(userMapper::map);
     }
 
     @Override
-    public Mono<Void> updateUser(String userId, UserDTO userDTO) {
-        Long id = Long.parseLong(userId);
+    public Mono<UserDTO> createUser(AuthRequestDTO authRequest) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(authRequest.getUsername());
+        userEntity.setPassword(authRequest.getPassword());
+        userEntity.setRole(UserRole.USER);
+        userEntity.setStatus(UserStatus.ACTIVE);
 
-        return userRepository.findById(id)
+        return userRepository.save(userEntity).map(userMapper::map);
+    }
+
+    @Override
+    @Transactional
+    public Mono<Void> updateUser(Long userId, UserDTO userDTO) {
+        return userRepository.findById(userId)
                 .flatMap(userEntity -> {
                     if (userDTO.getUsername() != null) {
                         userEntity.setUsername(userDTO.getUsername());
@@ -60,9 +75,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<Void> deleteUser(String userId) {
-        Long id = Long.parseLong(userId);
-
-        return userRepository.deleteById(id);
+    @Transactional
+    public Mono<Void> deleteUser(Long userId) {
+        return userRepository.deleteById(userId);
     }
 }

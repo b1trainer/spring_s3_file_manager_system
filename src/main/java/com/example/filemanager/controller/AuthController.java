@@ -3,12 +3,13 @@ package com.example.filemanager.controller;
 import com.example.filemanager.dto.AuthRequestDTO;
 import com.example.filemanager.dto.AuthResponseDTO;
 import com.example.filemanager.dto.UserDTO;
-import com.example.filemanager.entity.UserEntity;
 import com.example.filemanager.exceptions.InvalidCredentialsException;
-import com.example.filemanager.mapper.UserMapper;
-import com.example.filemanager.repository.UserRepository;
 import com.example.filemanager.security.CustomPrincipal;
 import com.example.filemanager.security.SecurityService;
+import com.example.filemanager.service.UserService;
+import com.example.filemanager.utils.Validation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -18,29 +19,21 @@ import reactor.core.publisher.Mono;
 public class AuthController {
 
     private final SecurityService securityService;
-    private final UserMapper userMapper;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public AuthController(SecurityService securityService, UserMapper userMapper, UserRepository userRepository) {
+    public AuthController(SecurityService securityService, UserService userService) {
         this.securityService = securityService;
-        this.userMapper = userMapper;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @PostMapping("/signIn")
-    public Mono<UserDTO> register(@RequestBody UserDTO userDTO) {
-        if (userDTO.getUsername() == null ||
-                userDTO.getUsername().isEmpty() ||
-                userDTO.getPassword() == null ||
-                userDTO.getPassword().isEmpty()
-        ) {
+    public Mono<ResponseEntity<UserDTO>> register(@RequestBody AuthRequestDTO authDTO) {
+        if (!Validation.isCredentialsValid(authDTO)) {
             return Mono.error(new InvalidCredentialsException());
         }
 
-        UserEntity entity = userMapper.map(userDTO);
-
-        return userRepository.save(entity)
-                .map(userMapper::map);
+        return userService.createUser(authDTO)
+                .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(user));
     }
 
     @PostMapping("/logIn")
@@ -57,10 +50,10 @@ public class AuthController {
     }
 
     @GetMapping("/info")
-    public Mono<UserDTO> getUserInfo(Authentication authentication) {
+    public Mono<ResponseEntity<UserDTO>> getUserInfo(Authentication authentication) {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
-        return userRepository.findById(principal.getId())
-                .map(userMapper::map);
+        return userService.getUser(principal.getId())
+                .map(ResponseEntity::ok);
     }
 }

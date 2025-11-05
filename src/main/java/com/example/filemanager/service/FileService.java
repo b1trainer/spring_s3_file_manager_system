@@ -11,13 +11,13 @@ import java.io.IOException;
 import java.util.List;
 
 public interface FileService {
-    Mono<ResponseBytes<GetObjectResponse>> getFile(String location);
+    Mono<ResponseBytes<GetObjectResponse>> getFile(Long fileId);
 
     Mono<List<FileDTO>> findFilesForUser(Long userId);
 
     Mono<FileDTO> loadFile(MultipartFile file, Long userId) throws IOException;
 
-    Mono<Void> updateFileStatus(String fileId, FileStatus status);
+    Mono<Void> updateFileStatus(Long fileId, FileStatus status);
 
     Mono<Void> deleteFile(String location);
 }

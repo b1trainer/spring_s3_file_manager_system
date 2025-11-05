@@ -6,6 +6,7 @@ import com.example.filemanager.mapper.EventMapper;
 import com.example.filemanager.repository.EventRepository;
 import com.example.filemanager.service.EventService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -20,23 +21,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Mono<EventDTO> getEvent(String eventId) {
-        Long id = Long.parseLong(eventId);
-
-        return eventRepository.findById(id)
+    public Mono<EventDTO> getEvent(Long eventId) {
+        return eventRepository.findById(eventId)
                 .flatMap(eventEntity -> Mono.just(eventMapper.map(eventEntity)));
     }
 
     @Override
+    @Transactional
     public Mono<EventDTO> createEvent(EventDTO eventDTO) {
         return eventRepository.save(eventMapper.map(eventDTO)).thenReturn(eventDTO);
     }
 
     @Override
-    public Mono<Void> updateEventStatus(String eventId, EventStatus status) {
-        Long id = Long.parseLong(eventId);
-
-        return eventRepository.findById(id)
+    @Transactional
+    public Mono<Void> updateEventStatus(Long eventId, EventStatus status) {
+        return eventRepository.findById(eventId)
                 .flatMap(eventEntity -> {
                     eventEntity.setStatus(status);
                     return Mono.empty();
@@ -44,9 +43,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Mono<Void> deleteEvent(String eventId) {
-        Long id = Long.parseLong(eventId);
-
-        return eventRepository.deleteById(id);
+    @Transactional
+    public Mono<Void> deleteEvent(Long eventId) {
+        return eventRepository.deleteById(eventId);
     }
 }

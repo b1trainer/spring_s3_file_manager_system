@@ -33,15 +33,14 @@ public class FileController {
                                                     @RequestPart(name = "file") MultipartFile file) throws IOException {
         CustomPrincipal principal = (CustomPrincipal) auth.getPrincipal();
         return fileService.loadFile(file, principal.getId())
-                .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
+                .map(fileDTO -> ResponseEntity.status(HttpStatus.CREATED).body(fileDTO));
     }
 
     @Secured("{ADMIN, MODERATOR}")
     @GetMapping
     public Mono<ResponseEntity<List<FileDTO>>> getListOfAllUserFiles(
-            @RequestParam("userId") String userId) {
-        Long id = Long.parseLong(userId);
-        return fileService.findFilesForUser(id).map(files -> ResponseEntity.ok().body(files));
+            @RequestParam("userId") Long userId) {
+        return fileService.findFilesForUser(userId).map(files -> ResponseEntity.ok().body(files));
     }
 
     @GetMapping
@@ -51,7 +50,7 @@ public class FileController {
     }
 
     @GetMapping("/{fileId}")
-    public Mono<ResponseEntity<byte[]>> getFile(@PathVariable String fileId) {
+    public Mono<ResponseEntity<byte[]>> getFile(@PathVariable Long fileId) {
         return fileService.getFile(fileId).map(file ->
                 ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(file.response().contentType()))
@@ -61,7 +60,7 @@ public class FileController {
     }
 
     @PatchMapping("/{fileId}/{status}")
-    public Mono<ResponseEntity<FileDTO>> updateFileStatus(@PathVariable String fileId, @PathVariable FileStatus status) {
+    public Mono<ResponseEntity<FileDTO>> updateFileStatus(@PathVariable Long fileId, @PathVariable FileStatus status) {
         return fileService.updateFileStatus(fileId, status)
                 .then(Mono.just(ResponseEntity.ok().build()));
     }
