@@ -4,7 +4,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - JWT_ENCODER_SECRET=dGhpc0lzVmV5U3Ryb25nQW5kUG93ZXJmdWxseVNlY3JldEtleSExMjM=
     depends_on:
       - mysql
       - minio
@@ -12,8 +12,10 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=file_storage
+      - R2DBC_USER=root
+      - R2DBC_PASSWORD=password
+      - FLYWAY_USER=root
+      - FLYWAY_PASSWORD=password
 
   minio:
     image: minio/minio
@@ -21,5 +23,5 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=password

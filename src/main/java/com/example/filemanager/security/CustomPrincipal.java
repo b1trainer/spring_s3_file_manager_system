@@ -1,9 +1,9 @@
 package com.example.filemanager.security;
 
+import java.io.Serializable;
 import java.security.Principal;
 
-
-public class CustomPrincipal implements Principal {
+public class CustomPrincipal implements Principal, Serializable {
 
     private Long id;
     private String name;

@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 
@@ -41,13 +42,18 @@ public class FileServiceImpl implements FileService {
     @Override
     public Mono<ResponseBytes<GetObjectResponse>> getFile(Long fileId) {
         return fileRepository.findById(fileId)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при поиске файла в базе данных: " + e))
                 .flatMap(fileEntity -> minioS3Service.getObjectFromS3(fileEntity.getLocation()));
     }
 
     @Override
     public Mono<List<FileDTO>> findFilesForUser(Long userId) {
-        return fileRepository.findAllByUserId(userId).flatMap(files ->
-                Mono.just(files.stream().map(fileMapper::map).toList()));
+        return fileRepository.findAllByUserId(userId)
+                .collectList()
+                .map(fileEntities -> fileEntities.stream()
+                        .map(fileMapper::map)
+                        .toList())
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при поиске файла в базе данных: " + e));
     }
 
     @Override
@@ -62,12 +68,15 @@ public class FileServiceImpl implements FileService {
         fileDTO.setUserId(userId);
 
         return minioS3Service.putObjectToS3(location, file)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при сохранении файла в хранилище S3: " + e))
                 .flatMap(res -> fileRepository.save(fileMapper.map(fileDTO)))
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при сохранении файла в базе данных: " + e))
                 .flatMap(fileEntity -> {
                     EventEntity event = createEvent(fileEntity, EventStatus.CREATED);
 
                     return eventRepository.save(event);
                 })
+                .onErrorContinue((e, obj) -> new SQLException("Ошибка при сохранении события в базе данных: " + e))
                 .thenReturn(fileDTO);
     }
 
@@ -75,6 +84,7 @@ public class FileServiceImpl implements FileService {
     @Transactional
     public Mono<Void> updateFileStatus(Long fileId, FileStatus status) {
         return fileRepository.findById(fileId)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при поиске файла в базе данных: " + e))
                 .flatMap(fileEntity -> {
                     fileEntity.setStatus(status);
                     return Mono.empty();
@@ -83,17 +93,19 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public Mono<Void> deleteFile(String fileId) {
-        Long id = Long.parseLong(fileId);
-
-        return fileRepository.findById(id)
+    public Mono<Void> deleteFile(Long fileId) {
+        return fileRepository.findById(fileId)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при поиске файла в базе данных: " + e))
                 .flatMap(fileEntity ->
                         minioS3Service.deleteObjectFromS3(fileEntity.getLocation())
                                 .thenReturn(fileEntity)
                 )
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при удалении файла из хранилища S3: " + e))
                 .flatMap(fileEntity ->
                         fileRepository.delete(fileEntity)
+                                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при удалении файла из базы данных: " + e))
                                 .then(eventRepository.save(createEvent(null, EventStatus.DELETED)))
+                                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка сохранении события в базу данных: " + e))
                 )
                 .then();
     }

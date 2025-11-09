@@ -14,10 +14,11 @@ public class UserAuthenticationBearer {
         Claims claims = verification.claims;
 
         String subject = claims.getSubject();
+        Long principalId = Long.parseLong(subject);
+
         String role = claims.get("role", String.class);
         String username = claims.get("username", String.class);
         String status = claims.get("status", String.class);
-        Long principalId = Long.parseLong(subject);
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
         CustomPrincipal principal = new CustomPrincipal(principalId, username, status);

@@ -14,7 +14,6 @@ public class UserDTO {
     private UserRole role;
 
     @NotNull
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private String createdAt;

@@ -10,9 +10,12 @@ import com.example.filemanager.service.UserService;
 import com.example.filemanager.utils.Validation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import javax.naming.AuthenticationException;
+import javax.naming.ServiceUnavailableException;
 
 @RestController
 @RequestMapping("/rest/v1/auth")
@@ -32,13 +35,15 @@ public class AuthController {
             return Mono.error(new InvalidCredentialsException());
         }
 
-        return userService.createUser(authDTO)
+        return userService.createUserThroughSignIn(authDTO)
+                .onErrorMap(RuntimeException.class, e -> new ServiceUnavailableException("Ошибка регистрации: " + e))
                 .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(user));
     }
 
     @PostMapping("/logIn")
-    public Mono<AuthResponseDTO> login(@RequestBody AuthRequestDTO authRequestDTO) {
+    public Mono<ResponseEntity<AuthResponseDTO>> login(@RequestBody AuthRequestDTO authRequestDTO) {
         return securityService.authenticate(authRequestDTO.getUsername(), authRequestDTO.getPassword())
+                .onErrorMap(RuntimeException.class, e -> new AuthenticationException("Ошибка аутентификации: " + e))
                 .flatMap(tokenDetails -> {
                     AuthResponseDTO authResponseDTO = new AuthResponseDTO();
                     authResponseDTO.setUserid(tokenDetails.getUserid());
@@ -46,14 +51,19 @@ public class AuthController {
                     authResponseDTO.setExpireAt(tokenDetails.getExpiresAt());
                     authResponseDTO.setIssuedAt(tokenDetails.getIssuedAt());
                     return Mono.just(authResponseDTO);
-                });
+                })
+                .map(token -> ResponseEntity.ok().body(token));
     }
 
     @GetMapping("/info")
-    public Mono<ResponseEntity<UserDTO>> getUserInfo(Authentication authentication) {
-        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
+    public Mono<ResponseEntity<UserDTO>> getUserInfo(@AuthenticationPrincipal CustomPrincipal principal) {
+        if (principal == null) {
+            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+        }
 
         return userService.getUser(principal.getId())
-                .map(ResponseEntity::ok);
+                .onErrorMap(RuntimeException.class, e -> new ServiceUnavailableException("Ошибка получения информации о пользователе: " + e))
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }

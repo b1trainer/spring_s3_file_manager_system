@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.*;
 
 @Service
@@ -21,7 +22,7 @@ public class SecurityService {
     private final PasswordEncoder passwordEncoder;
     private final ApplicationConfig applicationConfig;
 
-    public SecurityService(UserRepository userRepository, PasswordEncoder passwordEncoder, ApplicationConfig applicationConfig) {
+    public SecurityService(UserRepository userRepository, Encoder passwordEncoder, ApplicationConfig applicationConfig) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.applicationConfig = applicationConfig;
@@ -29,6 +30,7 @@ public class SecurityService {
 
     public Mono<TokenDetails> authenticate(String username, String password) {
         return userRepository.findByUsername(username)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при поиске пользователя в базе данных", e))
                 .flatMap(user -> {
                     if (!passwordEncoder.matches(password, user.getPassword())) {
                         return Mono.error(new InvalidCredentialsException("Invalid password"));

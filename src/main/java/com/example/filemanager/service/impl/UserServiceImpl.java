@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.sql.SQLException;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -25,28 +27,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<UserDTO> getUser(Long userId) {
-        return userRepository.findById(userId).flatMap(userEntity -> {
-            UserDTO userDTO = userMapper.map(userEntity);
-            return Mono.just(userDTO);
-        });
+        return userRepository.findById(userId)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при получении пользователя из базы данных", e))
+                .map(userMapper::map);
     }
 
     @Override
     @Transactional
     public Mono<UserDTO> createUser(UserDTO userDTO) {
-        UserEntity userEntity = userMapper.map(userDTO);
-        return userRepository.save(userEntity).map(userMapper::map);
+        return userRepository.save(userMapper.map(userDTO))
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при сохранении пользователя в базу данных", e))
+                .thenReturn(userDTO);
     }
 
     @Override
-    public Mono<UserDTO> createUser(AuthRequestDTO authRequest) {
+    public Mono<UserDTO> createUserThroughSignIn(AuthRequestDTO authRequest) {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(authRequest.getUsername());
         userEntity.setPassword(authRequest.getPassword());
         userEntity.setRole(UserRole.USER);
         userEntity.setStatus(UserStatus.ACTIVE);
 
-        return userRepository.save(userEntity).map(userMapper::map);
+        return userRepository.save(userEntity)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при сохранении пользователя в базу данных", e))
+                .map(userMapper::map);
     }
 
     @Override
@@ -71,12 +75,15 @@ public class UserServiceImpl implements UserService {
                     }
 
                     return userRepository.save(userEntity);
-                }).then();
+                })
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при сохранении пользователя в базу данных", e))
+                .then();
     }
 
     @Override
     @Transactional
     public Mono<Void> deleteUser(Long userId) {
-        return userRepository.deleteById(userId);
+        return userRepository.deleteById(userId)
+                .onErrorMap(RuntimeException.class, e -> new SQLException("Ошибка при удалении пользователя из базы данных", e));
     }
 }

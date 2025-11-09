@@ -9,7 +9,7 @@ public interface UserService {
 
     Mono<UserDTO> createUser(UserDTO userDTO);
 
-    Mono<UserDTO> createUser(AuthRequestDTO authRequest);
+    Mono<UserDTO> createUserThroughSignIn(AuthRequestDTO authRequest);
 
     Mono<Void> updateUser(Long userId, UserDTO userDTO);
 

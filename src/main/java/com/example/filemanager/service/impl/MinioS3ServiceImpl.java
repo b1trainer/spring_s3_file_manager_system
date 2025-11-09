@@ -10,6 +10,8 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
+import java.sql.SQLException;
+
 @Service
 public class MinioS3ServiceImpl implements MinioS3Service {
 
@@ -19,34 +21,45 @@ public class MinioS3ServiceImpl implements MinioS3Service {
     public MinioS3ServiceImpl(S3Client s3Client, S3Config s3Config) {
         this.s3Client = s3Client;
         this.s3Config = s3Config;
+
+        String bucketName = s3Config.getBucket();
+
+        try {
+            s3Client.headBucket(builder -> builder.bucket(bucketName));
+        } catch (S3Exception e) {
+            s3Client.createBucket(builder -> builder.bucket(bucketName));
+        }
     }
 
     public Mono<ResponseBytes<GetObjectResponse>> getObjectFromS3(String location) {
         return Mono.fromCallable(() -> s3Client.getObjectAsBytes(
-                GetObjectRequest.builder()
-                        .key(location)
-                        .bucket(s3Config.getBucket())
-                        .build())
-        );
+                        GetObjectRequest.builder()
+                                .bucket(s3Config.getBucket())
+                                .key(location)
+                                .build())
+                )
+                .onErrorMap(RuntimeException.class, e -> new RuntimeException("Ошибка при получении файла из хранилища S3: " + e));
     }
 
     public Mono<PutObjectResponse> putObjectToS3(String location, MultipartFile file) {
         return Mono.fromCallable(() ->
-                s3Client.putObject(PutObjectRequest.builder()
-                                .key(location)
-                                .bucket(s3Config.getBucket())
-                                .contentType(file.getContentType())
-                                .build(),
-                        RequestBody.fromBytes(file.getBytes()))
-        );
+                        s3Client.putObject(PutObjectRequest.builder()
+                                        .bucket(s3Config.getBucket())
+                                        .key(location)
+                                        .contentType(file.getContentType())
+                                        .build(),
+                                RequestBody.fromBytes(file.getBytes()))
+                )
+                .onErrorMap(RuntimeException.class, e -> new RuntimeException("Ошибка при сохранении файла в хранилище S3: " + e));
     }
 
     public Mono<DeleteObjectResponse> deleteObjectFromS3(String location) {
         return Mono.fromCallable(() ->
-                s3Client.deleteObject(DeleteObjectRequest.builder()
-                        .key(location)
-                        .bucket(s3Config.getBucket())
-                        .build())
-        );
+                        s3Client.deleteObject(DeleteObjectRequest.builder()
+                                .bucket(s3Config.getBucket())
+                                .key(location)
+                                .build())
+                )
+                .onErrorMap(RuntimeException.class, e -> new RuntimeException("Ошибка при удалении файла из хранилища S3: " + e));
     }
 }

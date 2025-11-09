@@ -13,6 +13,14 @@ public class AuthRequestDTO {
     @NotNull
     private String password;
 
+    public AuthRequestDTO() {
+    }
+
+    public AuthRequestDTO(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public String getUsername() {
         return username;
     }

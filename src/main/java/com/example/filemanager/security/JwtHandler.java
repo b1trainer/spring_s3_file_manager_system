@@ -27,7 +27,7 @@ public class JwtHandler {
 
     public Mono<Verification> checkToken(String token) {
         return Mono.just(verify(token))
-                .onErrorResume(e -> Mono.error(new RuntimeException("Token verification failed")));
+                .onErrorMap(e -> new RuntimeException("Token verification failed"));
     }
 
     private Verification verify(String token) {

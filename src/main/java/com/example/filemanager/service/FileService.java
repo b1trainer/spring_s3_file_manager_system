@@ -19,5 +19,5 @@ public interface FileService {
 
     Mono<Void> updateFileStatus(Long fileId, FileStatus status);
 
-    Mono<Void> deleteFile(String location);
+    Mono<Void> deleteFile(Long fileId);
 }
