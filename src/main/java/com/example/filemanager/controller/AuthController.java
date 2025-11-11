@@ -43,7 +43,7 @@ public class AuthController {
     @PostMapping("/logIn")
     public Mono<ResponseEntity<AuthResponseDTO>> login(@RequestBody AuthRequestDTO authRequestDTO) {
         return securityService.authenticate(authRequestDTO.getUsername(), authRequestDTO.getPassword())
-                .onErrorMap(RuntimeException.class, e -> new AuthenticationException("Ошибка аутентификации: " + e))
+                .onErrorMap(Exception.class, e -> new AuthenticationException("Ошибка аутентификации: " + e))
                 .flatMap(tokenDetails -> {
                     AuthResponseDTO authResponseDTO = new AuthResponseDTO();
                     authResponseDTO.setUserid(tokenDetails.getUserid());
@@ -62,7 +62,7 @@ public class AuthController {
         }
 
         return userService.getUser(principal.getId())
-                .onErrorMap(RuntimeException.class, e -> new ServiceUnavailableException("Ошибка получения информации о пользователе: " + e))
+                .onErrorMap(Exception.class, e -> new RuntimeException("Ошибка получения информации о пользователе: " + e))
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

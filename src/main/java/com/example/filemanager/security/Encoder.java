@@ -12,7 +12,6 @@ import java.util.Base64;
 
 @Component
 public class Encoder implements PasswordEncoder {
-
     private static final String SECRET_KEY_INSTANCE = "PBKDF2WithHmacSHA256";
 
     private final ApplicationConfig applicationConfig;

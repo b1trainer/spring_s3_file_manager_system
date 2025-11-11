@@ -38,7 +38,7 @@ public class MinioS3ServiceImpl implements MinioS3Service {
                                 .key(location)
                                 .build())
                 )
-                .onErrorMap(RuntimeException.class, e -> new RuntimeException("Ошибка при получении файла из хранилища S3: " + e));
+                .onErrorMap(Exception.class, e -> S3Exception.builder().message("Ошибка при получении файла из хранилища S3: " + e).build());
     }
 
     public Mono<PutObjectResponse> putObjectToS3(String location, MultipartFile file) {
@@ -50,7 +50,7 @@ public class MinioS3ServiceImpl implements MinioS3Service {
                                         .build(),
                                 RequestBody.fromBytes(file.getBytes()))
                 )
-                .onErrorMap(RuntimeException.class, e -> new RuntimeException("Ошибка при сохранении файла в хранилище S3: " + e));
+                .onErrorMap(Exception.class, e -> S3Exception.builder().message("Ошибка при сохранении файла в хранилище S3: " + e).build());
     }
 
     public Mono<DeleteObjectResponse> deleteObjectFromS3(String location) {
@@ -60,6 +60,6 @@ public class MinioS3ServiceImpl implements MinioS3Service {
                                 .key(location)
                                 .build())
                 )
-                .onErrorMap(RuntimeException.class, e -> new RuntimeException("Ошибка при удалении файла из хранилища S3: " + e));
+                .onErrorMap(Exception.class, e -> S3Exception.builder().message("Ошибка при удалении файла из хранилища S3: " + e).build());
     }
 }

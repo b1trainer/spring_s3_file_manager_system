@@ -1,6 +1,5 @@
 package com.example.filemanager.security;
 
-import com.example.filemanager.config.status.UserStatus;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +8,8 @@ import reactor.core.publisher.Mono;
 
 import java.security.SecureRandom;
 import java.util.Date;
+
+import static com.example.filemanager.dto.UserDTO.UserStatus;
 
 public class JwtHandler {
 

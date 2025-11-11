@@ -1,6 +1,5 @@
 package com.example.filemanager.service;
 
-import com.example.filemanager.config.status.UserStatus;
 import com.example.filemanager.dto.UserDTO;
 import com.example.filemanager.entity.UserEntity;
 import com.example.filemanager.mapper.UserMapper;
@@ -43,26 +42,25 @@ class UserServiceTest {
         userEntity.setId(1L);
         userEntity.setUsername("testUser");
         userEntity.setPassword("testPassword");
-        userEntity.setStatus(UserStatus.ACTIVE);
+        userEntity.setStatus(UserDTO.UserStatus.ACTIVE);
         userEntity.setCreatedAt(date);
 
         userDTO = new UserDTO();
         userDTO.setUsername("testUser");
-        userDTO.setPassword("testPassword");
-        userDTO.setStatus(UserStatus.ACTIVE);
+        userDTO.setStatus(UserDTO.UserStatus.ACTIVE);
         userDTO.setCreatedAt(date.toString());
     }
 
     @Test
     void getUser() {
-        when(userRepository.findById(anyLong())).thenReturn(Mono.just(userEntity));
+        when(userRepository.findUserById(anyLong())).thenReturn(Mono.just(userEntity));
         when(userMapper.map(any(UserEntity.class))).thenReturn(userDTO);
 
         StepVerifier.create(userService.getUser(123L))
                 .expectNext(userDTO)
                 .verifyComplete();
 
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findUserById(anyLong());
     }
 
     @Test
@@ -82,10 +80,13 @@ class UserServiceTest {
         when(userRepository.findById(anyLong())).thenReturn(Mono.just(userEntity));
         when(userRepository.save(userEntity)).thenReturn(Mono.just(userEntity));
 
-        StepVerifier.create(userService.updateUser(123L, new UserDTO("newusername", null, null, null, null)))
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("newUsername");
+
+        StepVerifier.create(userService.updateUser(123L, userDTO))
                 .verifyComplete();
 
-        Assertions.assertEquals("newusername", userEntity.getUsername());
+        Assertions.assertEquals("newUsername", userEntity.getUsername());
 
         verify(userRepository, times(1)).save(userEntity);
     }

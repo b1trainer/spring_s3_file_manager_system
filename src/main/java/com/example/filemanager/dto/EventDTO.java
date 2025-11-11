@@ -1,37 +1,59 @@
 package com.example.filemanager.dto;
 
-import com.example.filemanager.config.status.EventStatus;
-
 public class EventDTO {
-    private Long userId;
-    private Long fileId;
+    private Long id;
+    private UserDTO user;
+    private FileDTO file;
     private EventStatus status;
     private String timestamp;
+
+    public enum EventStatus {
+        CREATED("CREATED"), UPDATED("UPDATED"), DELETED("DELETED");
+
+        private final String value;
+
+        EventStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
     public EventDTO() {
     }
 
-    public EventDTO(Long userId, Long fileId, EventStatus status, String timestamp) {
-        this.userId = userId;
-        this.fileId = fileId;
+    public EventDTO(Long id, UserDTO user, FileDTO file, EventStatus status, String timestamp) {
+        this.id = id;
+        this.user = user;
+        this.file = file;
         this.status = status;
         this.timestamp = timestamp;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getFileId() {
-        return fileId;
+    public UserDTO getUser() {
+        return user;
     }
 
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
+    public void setUser(UserDTO user) {
+        this.user = user;
+    }
+
+    public FileDTO getFile() {
+        return file;
+    }
+
+    public void setFile(FileDTO file) {
+        this.file = file;
     }
 
     public EventStatus getStatus() {

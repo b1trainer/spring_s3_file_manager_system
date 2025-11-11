@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.security.Principal;
 
 public class CustomPrincipal implements Principal, Serializable {
-
     private Long id;
     private String name;
     private String status;

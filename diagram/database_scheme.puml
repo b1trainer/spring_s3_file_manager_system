@@ -1,0 +1,40 @@
+@startuml
+!define TABLE_ORIGINAL_COLOR #White
+!define TABLE_COLOR #E6F3F7
+!define PRIMARY_KEY_COLOR #FFF2CC
+
+skinparam groupInheritance 2
+hide circle
+hide empty members
+
+entity "users" as users {
+  id : INT} <<PK,AUTO_INCREMENT>>
+  --
+  username : VARCHAR(255) <<NOT NULL,UNIQUE>>
+  password : VARCHAR(2048)
+  role : VARCHAR(32) <<NOT NULL>>
+  status : VARCHAR(50) <<NOT NULL>>
+  created_at : TIMESTAMP <<DEFAULT CURRENT_TIMESTAMP>>
+}
+
+entity "files" as files {
+  id : INT} <<PK,AUTO_INCREMENT>>
+  --
+  name : VARCHAR(255) <<NOT NULL>>
+  location : VARCHAR(500) <<NOT NULL>>
+  status : VARCHAR(50) <<NOT NULL>>
+}
+
+entity "events" as events {
+  id : INT} <<PK,AUTO_INCREMENT>>
+  --
+  user_id : INT <<FK>>
+  file_id : INT <<FK>>
+  status : VARCHAR(50) <<NOT NULL>>
+  timestamp : TIMESTAMP <<DEFAULT CURRENT_TIMESTAMP>>
+}
+
+users ||--o{ events : "user_id"
+files ||--o{ events : "file_id"
+
+@enduml

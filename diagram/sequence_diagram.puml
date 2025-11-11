@@ -1,0 +1,25 @@
+@startuml
+actor User as user
+participant API as api
+participant "SecurityFilter" as security
+participant "FileController" as controller
+participant "FileService" as fileService
+participant "AWS SDK" as aws
+participant "FileRepository" as fileRepo
+participant "EventService" as eventService
+participant "EventRepository" as eventRepo
+
+user -> api: JWT Authenticated Upload File Request
+api -> security: validateToken()
+security --> api: valid
+api -> controller: handleFileUpload()
+controller -> fileService: uploadToS3()
+fileService -> aws: putObject()
+aws --> fileService: success response with location
+fileService -> fileRepo: persistFile()
+fileService -> eventService: createEvent()
+eventService -> eventRepo: persistEvent()
+controller --> api: Success Response
+api --> user: Success Response
+
+@enduml

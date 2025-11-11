@@ -1,21 +1,17 @@
 package com.example.filemanager.entity;
 
-import com.example.filemanager.config.status.FileStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
+
+import static com.example.filemanager.dto.FileDTO.FileStatus;
 
 @Table("files")
 public class FileEntity {
     @Id
     private Long id;
-
     private String name;
-
     private String location;
-
     private FileStatus status;
-
-    private Long userId;
 
     public Long getId() {
         return id;
@@ -49,11 +45,4 @@ public class FileEntity {
         this.status = status;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }

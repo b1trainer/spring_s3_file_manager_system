@@ -1,6 +1,5 @@
 package com.example.filemanager.service;
 
-import com.example.filemanager.config.status.EventStatus;
 import com.example.filemanager.dto.EventDTO;
 import com.example.filemanager.entity.EventEntity;
 import com.example.filemanager.mapper.EventMapper;
@@ -39,15 +38,15 @@ class EventServiceTest {
     static void setUp() {
         eventEntity = new EventEntity();
         eventEntity.setId(1L);
-        eventEntity.setStatus(EventStatus.CREATED);
-        eventEntity.setFileId(123L);
+        eventEntity.setStatus(EventDTO.EventStatus.CREATED);
+        eventEntity.setFile(null);
         eventEntity.setTimestamp(Instant.now());
-        eventEntity.setUserId(321L);
+        eventEntity.setUser(null);
 
         eventDTO = new EventDTO();
-        eventDTO.setFileId(123L);
-        eventDTO.setStatus(EventStatus.CREATED);
-        eventDTO.setUserId(321L);
+        eventDTO.setFile(null);
+        eventDTO.setStatus(EventDTO.EventStatus.CREATED);
+        eventDTO.setUser(null);
         eventDTO.setTimestamp(Instant.now().toString());
     }
 
@@ -81,12 +80,12 @@ class EventServiceTest {
     void updateEventStatus() {
         when(eventRepository.findById(any(Long.class))).thenReturn(Mono.just(eventEntity));
 
-        Assertions.assertEquals(EventStatus.CREATED, eventEntity.getStatus());
+        Assertions.assertEquals(EventDTO.EventStatus.CREATED, eventEntity.getStatus());
 
-        StepVerifier.create(eventService.updateEventStatus(123L, EventStatus.UPDATED))
+        StepVerifier.create(eventService.updateEventStatus(123L, EventDTO.EventStatus.UPDATED))
                 .verifyComplete();
 
-        Assertions.assertEquals(EventStatus.UPDATED, eventEntity.getStatus());
+        Assertions.assertEquals(EventDTO.EventStatus.UPDATED, eventEntity.getStatus());
     }
 
 }

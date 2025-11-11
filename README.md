@@ -55,11 +55,3 @@
 
 - Чтение своих данных
 
-## Диаграмма последовательности загрузки файлов
-
-![process_flow.png](static/process_flow.png)
-
-## Схема базы данных
-
-![db_scheme.png](static/db_scheme.png)
-

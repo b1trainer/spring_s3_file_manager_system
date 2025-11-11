@@ -1,5 +1,6 @@
 package com.example.filemanager.config;
 
+import com.example.filemanager.dto.UserDTO;
 import com.example.filemanager.security.AuthenticationManager;
 import com.example.filemanager.security.BearerTokenServerAuthenticationConverter;
 import com.example.filemanager.security.JwtHandler;
@@ -31,9 +32,9 @@ public class SecurityConfig {
                         exchange
                                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                                 .pathMatchers(NO_AUTH_ROUTES).permitAll()
-                                .pathMatchers("/**").hasRole(UserRole.ADMIN.getRoleName())
-                                .pathMatchers(MODERATOR_ROUTES).hasRole(UserRole.MODERATOR.getRoleName())
-                                .pathMatchers(DEFAULT_USER_ROUTES).hasRole(UserRole.USER.getRoleName())
+                                .pathMatchers("/**").hasRole(UserDTO.UserRole.ADMIN.getRoleName())
+                                .pathMatchers(MODERATOR_ROUTES).hasRole(UserDTO.UserRole.MODERATOR.getRoleName())
+                                .pathMatchers(DEFAULT_USER_ROUTES).hasRole(UserDTO.UserRole.USER.getRoleName())
                                 .pathMatchers("/rest/v1/auth/info").authenticated()
                                 .anyExchange().authenticated()
                 )

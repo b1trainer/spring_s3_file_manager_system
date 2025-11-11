@@ -1,27 +1,53 @@
+version: '1.0'
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: file-manager
     ports:
       - "8080:8080"
     environment:
       - JWT_ENCODER_SECRET=dGhpc0lzVmV5U3Ryb25nQW5kUG93ZXJmdWxseVNlY3JldEtleSExMjM=
+      - R2DBC_USER=root
+      - R2DBC_PASSWORD=password
+      - R2DBC_URL=r2dbc:pool:mysql://mysql:9000/file_manager
+      - FLYWAY_USER=root
+      - FLYWAY_PASSWORD=password
+      - FLYWAY_URL=jdbc:mysql://mysql:9000/file_manager
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=password
     depends_on:
-      - mysql
-      - minio
+      mysql:
+        condition: service_started
+      minio:
+        condition: service_started
+
 
   mysql:
     image: mysql:8.0
+    container_name: mysql-db
     environment:
-      - R2DBC_USER=root
-      - R2DBC_PASSWORD=password
-      - FLYWAY_USER=root
-      - FLYWAY_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=file_manager
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   minio:
     image: minio/minio
+    container_name: minio-storage
     ports:
       - "9000:9000"
       - "9001:9001"
     environment:
-      - MINIO_ACCESS_KEY=admin
-      - MINIO_SECRET_KEY=password
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+    volumes:
+      - minio_data:/data
+
+volumes:
+  mysql_data:
+  minio_data:

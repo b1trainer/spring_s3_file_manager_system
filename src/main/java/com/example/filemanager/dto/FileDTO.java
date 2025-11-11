@@ -1,24 +1,44 @@
 package com.example.filemanager.dto;
 
-import com.example.filemanager.config.status.FileStatus;
 import software.amazon.awssdk.annotations.NotNull;
 
 public class FileDTO {
+    private Long id;
     private String name;
     @NotNull
     private String location;
     private FileStatus status;
-    @NotNull
-    private Long userId;
+
+    public enum FileStatus {
+        ACTIVE("ACTIVE"), ARCHIVE("ARCHIVE");
+
+        private final String value;
+
+        FileStatus(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
     public FileDTO() {
     }
 
-    public FileDTO(String name, String location, FileStatus status, Long userId) {
+    public FileDTO(Long id, String name, String location, FileStatus status) {
+        this.id = id;
         this.name = name;
         this.location = location;
         this.status = status;
-        this.userId = userId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -45,11 +65,4 @@ public class FileDTO {
         this.status = status;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }

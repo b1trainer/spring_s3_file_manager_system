@@ -1,7 +1,5 @@
 package com.example.filemanager.integrationTests;
 
-import com.example.filemanager.config.UserRole;
-import com.example.filemanager.config.status.UserStatus;
 import com.example.filemanager.dto.UserDTO;
 import com.example.filemanager.entity.UserEntity;
 import com.example.filemanager.repository.UserRepository;
@@ -13,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
 
 @SpringBootTest
+@DirtiesContext
 public class UsersControllerIntegrationTest extends MyContainersConfiguration {
     private static final String USER_NAME = "testUserController";
     private static final String USER_PASSWORD = "superStrongPassword123!";
@@ -48,8 +48,8 @@ public class UsersControllerIntegrationTest extends MyContainersConfiguration {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(USER_NAME);
         userEntity.setPassword(passwordEncoder.encode(USER_PASSWORD));
-        userEntity.setStatus(UserStatus.ACTIVE);
-        userEntity.setRole(UserRole.ADMIN);
+        userEntity.setStatus(UserDTO.UserStatus.ACTIVE);
+        userEntity.setRole(UserDTO.UserRole.ADMIN);
 
         user = userRepository.save(userEntity).block();
     }
@@ -58,34 +58,42 @@ public class UsersControllerIntegrationTest extends MyContainersConfiguration {
     void shouldCreateUser() {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername("userName");
-        userDTO.setPassword(passwordEncoder.encode("password"));
-        userDTO.setRole(UserRole.USER);
-        userDTO.setStatus(UserStatus.ACTIVE);
+        userDTO.setRole(UserDTO.UserRole.USER);
+        userDTO.setStatus(UserDTO.UserStatus.ACTIVE);
 
         webTestClient
-                .mutateWith(mockUser().roles(UserRole.ADMIN.getRoleName()))
+                .mutateWith(mockUser().roles(UserDTO.UserRole.ADMIN.getRoleName()))
                 .post()
                 .uri("/rest/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(userDTO)
                 .exchange()
-                .expectStatus().isCreated();
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.username").isEqualTo(userDTO.getUsername())
+                .jsonPath("$.role").isEqualTo(userDTO.getRole().getRoleName())
+                .jsonPath("$.status").isEqualTo(userDTO.getStatus().getStatusValue());
     }
 
     @Test
     void shouldGetUser() {
         webTestClient
-                .mutateWith(mockUser().roles(UserRole.ADMIN.getRoleName()))
+                .mutateWith(mockUser().roles(UserDTO.UserRole.ADMIN.getRoleName()))
                 .get()
                 .uri("/rest/v1/users/" + user.getId())
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(user.getId())
+                .jsonPath("$.username").isEqualTo(user.getUsername())
+                .jsonPath("$.role").isEqualTo(user.getRole().getRoleName())
+                .jsonPath("$.status").isEqualTo(user.getStatus().getStatusValue());
     }
 
     @Test
     void shouldDeleteUser() {
         webTestClient
-                .mutateWith(mockUser().roles(UserRole.ADMIN.getRoleName()))
+                .mutateWith(mockUser().roles(UserDTO.UserRole.ADMIN.getRoleName()))
                 .delete()
                 .uri("/rest/v1/users/" + user.getId())
                 .exchange()
@@ -96,9 +104,11 @@ public class UsersControllerIntegrationTest extends MyContainersConfiguration {
     void shouldUpdateUser() {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername("newUserName");
+        userDTO.setStatus(UserDTO.UserStatus.BLOCKED);
+        userDTO.setRole(UserDTO.UserRole.MODERATOR);
 
         webTestClient
-                .mutateWith(mockUser().roles(UserRole.ADMIN.getRoleName()))
+                .mutateWith(mockUser().roles(UserDTO.UserRole.ADMIN.getRoleName()))
                 .patch()
                 .uri("/rest/v1/users/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON)

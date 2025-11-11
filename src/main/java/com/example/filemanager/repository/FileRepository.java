@@ -7,6 +7,4 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface FileRepository extends R2dbcRepository<FileEntity, Long> {
-
-    Flux<FileEntity> findAllByUserId(Long userId);
 }

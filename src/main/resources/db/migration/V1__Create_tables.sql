@@ -1,11 +1,11 @@
 CREATE TABLE users
 (
-    id       INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(255)  NOT NULL UNIQUE,
-    password VARCHAR(2048) NOT NULL,
-    role     VARCHAR(32)   NOT NULL,
-    status   VARCHAR(50)   NOT NULL,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id         INT PRIMARY KEY AUTO_INCREMENT,
+    username   VARCHAR(255)  NOT NULL UNIQUE,
+    password   VARCHAR(2048),
+    role       VARCHAR(32)   NOT NULL,
+    status     VARCHAR(50)   NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE files
@@ -13,9 +13,7 @@ CREATE TABLE files
     id       INT PRIMARY KEY AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
     location VARCHAR(500) NOT NULL,
-    status   VARCHAR(50)  NOT NULL,
-    user_id  INT          NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    status   VARCHAR(50)  NOT NULL
 );
 
 CREATE TABLE events
@@ -29,7 +27,6 @@ CREATE TABLE events
     FOREIGN KEY (file_id) REFERENCES files (id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_files_user_id ON files (user_id);
 CREATE INDEX idx_events_user_id ON events (user_id);
 CREATE INDEX idx_events_file_id ON events (file_id);
 CREATE INDEX idx_events_timestamp ON events (timestamp);

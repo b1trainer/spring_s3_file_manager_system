@@ -1,5 +1,6 @@
 package com.example.filemanager.testUtils;
 
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -17,13 +18,11 @@ public abstract class MyContainersConfiguration {
             .withDatabaseName("file_manager")
             .withUsername("test")
             .withPassword("test")
-            .withReuse(true);;
+            .withReuse(true);
 
     @Container
     protected static final GenericContainer<?> minioContainer = new GenericContainer<>("minio/minio")
             .withExposedPorts(9000)
-            .withEnv("MINIO_ROOT_USER", "minioadmin")
-            .withEnv("MINIO_ROOT_PASSWORD", "minioadmin")
             .withCommand("server", "/data")
             .withReuse(true);;
 
@@ -31,8 +30,13 @@ public abstract class MyContainersConfiguration {
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("minio.endpoint", () ->
                 "http://" + minioContainer.getHost() + ":" + minioContainer.getFirstMappedPort());
+        registry.add("jwt.password.encoder.secret", () ->
+                "dGhpc0lzVmV5U3Ryb25nQW5kUG93ZXJmdWxseVNlY3JldEtleSExMjM=");
+        registry.add("spring.r2dbc.url", () -> "r2dbc:pool:mysql://" +
+                mySQLContainer.getHost() + ":" + mySQLContainer.getFirstMappedPort() + "/" + mySQLContainer.getDatabaseName());
+        registry.add("spring.flyway.url", () -> "jdbc:mysql://" +
+                mySQLContainer.getHost() + ":" + mySQLContainer.getFirstMappedPort() + "/" + mySQLContainer.getDatabaseName());
         registry.add("minio.access-key", () -> "minioadmin");
         registry.add("minio.secret-key", () -> "minioadmin");
-        registry.add("minio.region", () -> "us-east-1");
     }
 }

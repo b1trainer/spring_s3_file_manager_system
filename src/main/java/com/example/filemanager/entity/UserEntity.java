@@ -1,26 +1,25 @@
 package com.example.filemanager.entity;
 
-import com.example.filemanager.config.UserRole;
-import com.example.filemanager.config.status.UserStatus;
+import com.example.filemanager.dto.UserDTO;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Table("users")
 public class UserEntity {
     @Id
     private Long id;
-
     private String username;
-
     private String password;
-
-    private UserRole role;
-
-    private UserStatus status;
-
+    private UserDTO.UserRole role;
+    private UserDTO.UserStatus status;
+    @Transient
+    private Set<EventEntity> events = new HashSet<>();
     @CreatedDate
     private Instant createdAt;
 
@@ -56,19 +55,27 @@ public class UserEntity {
         this.createdAt = createdAt;
     }
 
-    public UserRole getRole() {
+    public UserDTO.UserRole getRole() {
         return role;
     }
 
-    public void setRole(UserRole role) {
+    public void setRole(UserDTO.UserRole role) {
         this.role = role;
     }
 
-    public UserStatus getStatus() {
+    public UserDTO.UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatus status) {
+    public void setStatus(UserDTO.UserStatus status) {
         this.status = status;
+    }
+
+    public Set<EventEntity> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<EventEntity> events) {
+        this.events = events;
     }
 }

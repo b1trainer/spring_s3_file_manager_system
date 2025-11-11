@@ -1,23 +1,20 @@
 package com.example.filemanager.entity;
 
-import com.example.filemanager.config.status.EventStatus;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
 
+import static com.example.filemanager.dto.EventDTO.EventStatus;
+
 @Table("events")
 public class EventEntity {
     @Id
     private Long id;
-
-    private Long userId;
-
-    private Long fileId;
-
+    private UserEntity user;
+    private FileEntity file;
     private EventStatus status;
-
     @CreatedDate
     private Instant timestamp;
 
@@ -45,19 +42,19 @@ public class EventEntity {
         this.timestamp = timestamp;
     }
 
-    public Long getUserId() {
-        return userId;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
-    public Long getFileId() {
-        return fileId;
+    public FileEntity getFile() {
+        return file;
     }
 
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
+    public void setFile(FileEntity file) {
+        this.file = file;
     }
 }
